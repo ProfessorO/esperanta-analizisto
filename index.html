@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Esperanto parser</title>
+	<link rel="stylesheet" href="esperanto.css">
+</head>
+<body>
+
+
+<h1>Esperanto parser</h1>
+
+<h2>Source</h2>
+<textarea id="source" cols="80" rows="20">
+Alicio, jam longan tempon sidinte apud sia fratino sur la deklivo, tre enuiĝis pro senokupo. Unu, du foje ŝi prove rigardis en la libron kiun la fratino legas, sed povis vidi en ĝi nek desegnojn nek konversaciojn, kaj "por kio utilas libro," pensis ŝi, "enhavanta nek desegnojn nek konversaciojn?" Ŝi do ekpripensis—ne tre vigle ĉar la tago estis varma, kaj ŝi sentis sin tre dormema—ĉu la plezuro fari ĉenon el lekantetoj valorus la laboron sin levi kaj kolekti lekantetojn, kiam tutapude preterkuris Blanka kuniklo kun paleruĝaj okuloj.
+</textarea>
+<button id="go">Go</button>
+
+<h2>Results</h2>
+<pre id="results"></pre>
+
+
+<script src="esperanto.js"></script>
+<script>
+	'use strict';
+	
+	let go = _ => {
+		let text = document.getElementById('source').value;
+		let results = analyze(text);
+		
+		console.log(results);
+		document.getElementById('results').innerHTML = JSON.stringify(results, null, 2);
+	}
+	
+	go();
+	document.getElementById('go').onclick = go;
+</script>
+
+</body>
+</html>
