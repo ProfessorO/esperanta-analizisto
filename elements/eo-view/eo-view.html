@@ -1,0 +1,27 @@
+<dom-module id="eo-view">
+  <template>
+    <h2>Data view</h2>
+    <ul>
+      <template is="dom-repeat" items="{{words}}" as="word">
+        <li>{{word.word}}</li>
+      </template>
+    </ul>
+    <input on-keyup="_handleInput">
+  </template>
+  <script>
+    Polymer({
+      is: 'eo-view',
+      properties: {
+        words: Array
+      },
+      _handleInput: function(e) {
+        if (e.keyCode == 13) {
+          this.push('words', {
+            word: e.target.value
+          });
+          e.target.value = null;
+        }
+      }
+    });
+  </script>
+</dom-module>
