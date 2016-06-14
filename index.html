@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<title>Esperanto parser</title>
-	<link rel="stylesheet" href="esperanto.css">
-	
-	<script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
-	<link rel="import" href="bower_components/polymer/polymer.html">
+  <meta charset="UTF-8">
+  <title>Esperanto parser</title>
+  <link rel="stylesheet" href="esperanto.css">
+  
+  <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+  <link rel="import" href="bower_components/polymer/polymer.html">
 </head>
 <body>
 
@@ -25,18 +25,18 @@ Alicio, jam longan tempon sidinte apud sia fratino sur la deklivo, tre enuiĝis 
 
 <script src="esperanto.js"></script>
 <script>
-	'use strict';
-	
-	let go = _ => {
-		let text = document.getElementById('source').value;
-		let results = analyze(text);
-		
-		console.log(results);
-		document.getElementById('results').innerHTML = JSON.stringify(results, null, 2);
-	}
-	
-	go();
-	document.getElementById('go').onclick = go;
+  'use strict';
+  
+  let go = _ => {
+    let text = document.getElementById('source').value;
+    let results = analyze(text);
+    
+    console.log(results);
+    document.getElementById('results').innerHTML = JSON.stringify(results, null, 2);
+  }
+  
+  go();
+  document.getElementById('go').onclick = go;
 </script>
 
 </body>
