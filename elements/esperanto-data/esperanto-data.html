@@ -1,0 +1,24 @@
+<dom-module id="esperanto-data">
+  <script>
+    Polymer({
+      is: 'esperanto-data',
+      properties: {
+        words: {
+          notify: true,
+          value: _ => {
+            return [
+              {
+                word: 'ebl',
+                meaning: 'possibility'
+              },
+              {
+                word: 'o',
+                meaning: 'noun ending'
+              }
+            ]
+          }
+        }
+      }
+    });
+  </script>
+</dom-module>

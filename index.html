@@ -7,11 +7,14 @@
 
   <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
   <link rel="import" href="bower_components/polymer/polymer.html">
+  <link rel="import" href="elements/esperanto-data/esperanto-data.html">
 </head>
 <body>
 
   <template id="t" is="dom-bind">
   
+    <!--
+
     <h1>Esperanto parser</h1>
 
     <h2>Source</h2>
@@ -20,6 +23,10 @@
 
     <h2>Results</h2>
     <pre id="results"></pre>
+
+    -->
+
+    <esperanto-data words="{{words}}"></esperanto-data>
   
   </template>
 
@@ -31,16 +38,16 @@
 
     t.addEventListener('dom-change', _ => {
 
-      let go = _ => {
-        let text = document.getElementById('source').value;
-        let results = analyze(text);
+      // let go = _ => {
+      //   let text = document.getElementById('source').value;
+      //   let results = analyze(text);
 
-        console.log(results);
-        document.getElementById('results').innerHTML = JSON.stringify(results, null, 2);
-      }
+      //   console.log(results);
+      //   document.getElementById('results').innerHTML = JSON.stringify(results, null, 2);
+      // }
 
-      go();
-      document.getElementById('go').onclick = go;
+      // go();
+      // document.getElementById('go').onclick = go;
 
     });
   </script>
