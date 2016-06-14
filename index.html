@@ -29,16 +29,22 @@
 <script>
   'use strict';
 
-  let go = _ => {
-    let text = document.getElementById('source').value;
-    let results = analyze(text);
+  let t = document.querySelector('#t');
 
-    console.log(results);
-    document.getElementById('results').innerHTML = JSON.stringify(results, null, 2);
-  }
+  t.addEventListener('dom-change', _ => {
 
-  go();
-  document.getElementById('go').onclick = go;
+    let go = _ => {
+      let text = document.getElementById('source').value;
+      let results = analyze(text);
+
+      console.log(results);
+      document.getElementById('results').innerHTML = JSON.stringify(results, null, 2);
+    }
+
+    go();
+    document.getElementById('go').onclick = go;
+
+  });
 </script>
 
 </body>
