@@ -2,7 +2,9 @@
 
 <dom-module id="eo-data">
   <template>
-    <iron-localstorage value="{{words}}" on-iron-localstorage-load-empty="initializeDefaultWords"></iron-localstorage>
+    <iron-localstorage
+      value="{{words}}"
+      on-iron-localstorage-load-empty="initializeDefaultWords"></iron-localstorage>
   </template>
   <script>
     Polymer({
