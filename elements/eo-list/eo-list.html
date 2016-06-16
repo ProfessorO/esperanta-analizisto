@@ -1,0 +1,26 @@
+<dom-module id="eo-list">
+  <template>
+    <style>
+      .delete {
+        margin-left: 0.5em;
+      }
+    </style>
+
+    <ul>
+      <template is="dom-repeat" items="{{words}}" as="word">
+        <li>{{word.word}}<a class="delete" href="#" word="{{word}}" on-tap="_onDelete">delete</a></li>
+      </template>
+    </ul>
+  </template>
+  <script>
+    Polymer({
+      is: 'eo-list',
+      properties: {
+        words: Array
+      },
+      _onDelete: function(e) {
+        this.fire('delete-word', {word: e.target.word});
+      }
+    });
+  </script>
+</dom-module>

@@ -1,12 +1,10 @@
+<link rel="import" href="../eo-list/eo-list.html">
+
 <dom-module id="eo-view">
   <template>
     <h2>Data view</h2>
-    <ul>
-      <template is="dom-repeat" items="{{words}}" as="word">
-        <li>{{word.word}}</li>
-      </template>
-    </ul>
-    <input on-keyup="_handleInput">
+    <eo-list words="{{words}}" on-delete-word="deleteWord"></eo-list>
+    <input id="input" on-keyup="_handleInput">
   </template>
   <script>
     Polymer({
@@ -22,6 +20,10 @@
           });
           e.target.value = null;
         }
+      },
+      deleteWord: function(e) {
+        this.arrayDelete('words', e.detail.word);
+        this.$.input.focus();
       }
     });
   </script>
