@@ -1,6 +1,6 @@
 <link rel="import" href="../eo-list/eo-list.html">
 
-<dom-module id="eo-view">
+<dom-module id="eo-dataview">
   <template>
     <h2>Data view</h2>
     <eo-list words="{{words}}" on-delete-word="deleteWord"></eo-list>
@@ -9,7 +9,7 @@
 
   <script>
     Polymer({
-      is: 'eo-view',
+      is: 'eo-dataview',
 
       properties: {
         words: Array
