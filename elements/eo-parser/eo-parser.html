@@ -10,20 +10,15 @@
       is: 'eo-parser',
 
       properties: {
-        words: {
-          notify: true,
-          observer: '_wordsChanged'
-        }
+        words: Array
       },
 
-      ready: function() {
-        this.addEventListener('words-changed', function(e) {
-          console.log('words-changed');
-        });
-      },
+      observers: [
+        '_wordsChanged(words.*)'
+      ],
 
-      _wordsChanged: function(newValue, oldValue) {
-        console.log('words', newValue);
+      _wordsChanged: function(changeRecord) {
+        console.log(changeRecord);
       },
 
       analyze: function(text) {
