@@ -41,7 +41,8 @@
 
       let go = _ => {
         let text = document.getElementById('source').value;
-        let results = document.querySelector('eo-parser').analyze(text);
+        let parser = document.querySelector('eo-parser');
+        let results = parser.analyze(text);
 
         console.log(results);
         document.getElementById('results').innerHTML = JSON.stringify(results, null, 2);
