@@ -27,6 +27,7 @@
       },
 
       observers: [
+        'go(words)',
         '_wordsChanged(words.splices)'
         // https://www.polymer-project.org/1.0/docs/devguide/properties#array-observation
       ],
@@ -34,10 +35,6 @@
       _wordsChanged: function(splices) {
         console.log('_wordsChanged', this.words);
         // if we want to reparse automatically whenever the data changes, we can do it here
-      },
-
-      ready: function() {
-        this.go();
       },
 
       go: function() {

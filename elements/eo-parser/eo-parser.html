@@ -11,8 +11,21 @@
         let info = {};
 
         info.wordlist = text.toLowerCase().match(/[abcĉdefgĝhĥijĵklmnoprsŝtuŭvz]+/g);
+        info.rootlist = info.wordlist.map(this.splitWord, this);
 
         return info;
+      },
+
+      splitWord: function(word) {
+        if (word.length == 0)
+          return [];
+        for (let end = word.length; end > 0; end--) {
+          let possibleRoot = word.slice(0, end);
+          if (this.words.map(entry => entry.word).includes(possibleRoot)) {
+            return [possibleRoot].concat(this.splitWord(word.slice(end)));
+          }
+        }
+        return [word];
       }
     });
   </script>
