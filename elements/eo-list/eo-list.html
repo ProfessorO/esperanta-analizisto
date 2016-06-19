@@ -16,9 +16,11 @@
   <script>
     Polymer({
       is: 'eo-list',
+
       properties: {
         words: Array
       },
+
       _onDelete: function(e) {
         this.fire('delete-word', {word: this.$.repeater.itemForElement(e.target)});
       }

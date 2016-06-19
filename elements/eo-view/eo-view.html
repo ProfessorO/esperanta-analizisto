@@ -10,9 +10,11 @@
   <script>
     Polymer({
       is: 'eo-view',
+
       properties: {
         words: Array
       },
+
       _handleInput: function(e) {
         if (e.keyCode == 13) {
           // Enter
@@ -22,6 +24,7 @@
           e.target.value = null;
         }
       },
+
       deleteWord: function(e) {
         this.arrayDelete('words', e.detail.word);
         this.$.input.focus();
