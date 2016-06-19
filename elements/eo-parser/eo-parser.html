@@ -1,10 +1,4 @@
 <dom-module id="eo-parser">
-  <template>
-    <template is="dom-repeat" items="{{words}}">
-      {{item.word}};
-    </template>
-  </template>
-
   <script>
     Polymer({
       is: 'eo-parser',
@@ -14,11 +8,11 @@
       },
 
       observers: [
-        '_wordsChanged(words.*)'
+        '_wordsChanged(words.splices)'
       ],
 
-      _wordsChanged: function(changeRecord) {
-        console.log(changeRecord);
+      _wordsChanged: function(splices) {
+        console.log('_otherWordsChanged', this.words);
       },
 
       analyze: function(text) {
