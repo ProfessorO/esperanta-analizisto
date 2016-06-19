@@ -1,0 +1,37 @@
+<link rel="import" href="../eo-list/eo-list.html">
+
+<dom-module id="eo-dataview">
+  <template>
+    <h2>Data view</h2>
+    <eo-list words="{{words}}" on-delete-word="deleteWord"></eo-list>
+    <input id="input" on-keyup="_handleInput">
+  </template>
+
+  <script>
+    Polymer({
+      is: 'eo-dataview',
+
+      properties: {
+        words: {
+          type: Array,
+          notify: true
+        }
+      },
+
+      _handleInput: function(e) {
+        if (e.keyCode == 13) {
+          // Enter
+          this.push('words', {
+            word: e.target.value
+          });
+          e.target.value = null;
+        }
+      },
+
+      deleteWord: function(e) {
+        this.arrayDelete('words', e.detail.word);
+        this.$.input.focus();
+      }
+    });
+  </script>
+</dom-module>

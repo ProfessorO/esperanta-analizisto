@@ -1,0 +1,32 @@
+<link rel="import" href="../../bower_components/iron-localstorage/iron-localstorage.html">
+
+<dom-module id="eo-data">
+  <template>
+    <iron-localstorage
+      value="{{words}}"
+      on-iron-localstorage-load-empty="initializeDefaultWords"></iron-localstorage>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'eo-data',
+
+      properties: {
+        words: {
+          notify: true
+        }
+      },
+
+      initializeDefaultWords: function() {
+        this.words = [
+          {
+            word: 'ebl'
+          },
+          {
+            word: 'o'
+          }
+        ]
+      }
+    });
+  </script>
+</dom-module>
