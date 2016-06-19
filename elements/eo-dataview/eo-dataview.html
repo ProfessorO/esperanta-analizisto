@@ -12,7 +12,10 @@
       is: 'eo-dataview',
 
       properties: {
-        words: Array
+        words: {
+          type: Array,
+          notify: true
+        }
       },
 
       _handleInput: function(e) {

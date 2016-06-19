@@ -1,10 +1,29 @@
 <dom-module id="eo-parser">
+  <template>
+    <template is="dom-repeat" items="{{words}}">
+      {{item.word}};
+    </template>
+  </template>
+
   <script>
     Polymer({
       is: 'eo-parser',
 
       properties: {
-        words: Array
+        words: {
+          notify: true,
+          observer: '_wordsChanged'
+        }
+      },
+
+      ready: function() {
+        this.addEventListener('words-changed', function(e) {
+          console.log('words-changed');
+        });
+      },
+
+      _wordsChanged: function(newValue, oldValue) {
+        console.log('words', newValue);
       },
 
       analyze: function(text) {
