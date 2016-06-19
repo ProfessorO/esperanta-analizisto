@@ -7,15 +7,6 @@
         words: Array
       },
 
-      observers: [
-        '_wordsChanged(words.splices)'
-        // https://www.polymer-project.org/1.0/docs/devguide/properties#array-observation
-      ],
-
-      _wordsChanged: function(splices) {
-        console.log('_otherWordsChanged', this.words);
-      },
-
       analyze: function(text) {
         let info = {};
 

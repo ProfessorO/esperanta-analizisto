@@ -7,52 +7,21 @@
 
   <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
   <link rel="import" href="bower_components/polymer/polymer.html">
-  <link rel="import" href="elements/eo-data/eo-data.html">
   <link rel="import" href="elements/eo-dataview/eo-dataview.html">
-  <link rel="import" href="elements/eo-parser/eo-parser.html">
+  <link rel="import" href="elements/eo-ui/eo-ui.html">
+  <link rel="import" href="elements/eo-data/eo-data.html">
 </head>
 <body>
 
   <template id="t" is="dom-bind">
   
-    <h1>Esperanto parser</h1>
+    <eo-dataview words="{{words}}"></eo-dataview>
 
-    <h2>Source</h2>
-    <textarea id="source" cols="80" rows="20">Alicio, jam longan tempon sidinte apud sia fratino sur la deklivo, tre enuiĝis pro senokupo. Unu, du foje ŝi prove rigardis en la libron kiun la fratino legas, sed povis vidi en ĝi nek desegnojn nek konversaciojn, kaj "por kio utilas libro," pensis ŝi, "enhavanta nek desegnojn nek konversaciojn?" Ŝi do ekpripensis—ne tre vigle ĉar la tago estis varma, kaj ŝi sentis sin tre dormema—ĉu la plezuro fari ĉenon el lekantetoj valorus la laboron sin levi kaj kolekti lekantetojn, kiam tutapude preterkuris Blanka kuniklo kun paleruĝaj okuloj.</textarea>
-    <button id="go">Go</button>
-
-    <h2>Results</h2>
-    <pre id="results" style="display: none;"></pre>
+    <eo-ui words="{{words}}"></eo-ui>
 
     <eo-data words="{{words}}"></eo-data>
 
-    <eo-dataview words="{{words}}"></eo-dataview>
-
-    <eo-parser words="{{words}}"></eo-parser>
-  
   </template>
-
-  <script>
-    'use strict';
-
-    let t = document.querySelector('#t');
-
-    t.addEventListener('dom-change', function() {
-
-      let go = _ => {
-        let text = document.getElementById('source').value;
-        let parser = document.querySelector('eo-parser');
-        let results = parser.analyze(text);
-
-        console.log(results);
-        document.getElementById('results').innerHTML = JSON.stringify(results, null, 2);
-      }
-
-      go();
-      document.getElementById('go').onclick = go;
-
-    });
-  </script>
 
 </body>
 </html>
