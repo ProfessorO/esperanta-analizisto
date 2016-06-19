@@ -7,10 +7,9 @@
     </style>
 
     <ul>
-      <template is="dom-repeat" items="{{words}}" as="word">
+      <template id="repeater" is="dom-repeat" items="{{words}}" as="word">
         <li>{{word.word}}<a class="delete"
                             href="#"
-                            word="{{word}}"
                             on-tap="_onDelete">delete</a></li>
       </template>
     </ul>
@@ -22,7 +21,7 @@
         words: Array
       },
       _onDelete: function(e) {
-        this.fire('delete-word', {word: e.target.word});
+        this.fire('delete-word', {word: this.$.repeater.itemForElement(e.target)});
       }
     });
   </script>
