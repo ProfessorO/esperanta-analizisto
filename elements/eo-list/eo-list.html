@@ -1,16 +1,14 @@
 <dom-module id="eo-list">
   <template>
     <style>
-      .delete {
+      a {
         margin-left: 0.5em;
       }
     </style>
 
     <ul>
       <template id="repeater" is="dom-repeat" items="{{words}}" as="word">
-        <li>{{word.word}}<a class="delete"
-                            href="#"
-                            on-tap="_onDelete">delete</a></li>
+        <li>{{word.word}}<a href="#" on-tap="_onDelete">delete</a></li>
       </template>
     </ul>
   </template>
