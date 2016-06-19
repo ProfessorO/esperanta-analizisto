@@ -1,0 +1,19 @@
+<dom-module id="eo-parser">
+  <script>
+    Polymer({
+      is: 'eo-parser',
+
+      properties: {
+        words: Array
+      },
+
+      analyze: function(text) {
+        let info = {};
+
+        info.wordlist = text.toLowerCase().match(/[abcĉdefgĝhĥijĵklmnoprsŝtuŭvz]+/g);
+
+        return info;
+      }
+    });
+  </script>
+</dom-module>
