@@ -1,10 +1,8 @@
-<link rel="import" href="../../bower_components/iron-localstorage/iron-localstorage.html">
+<link rel="import" href="../../bower_components/polymerfire/firebase-document.html">
 
 <dom-module id="eo-data">
   <template>
-    <iron-localstorage
-      value="{{words}}"
-      on-iron-localstorage-load-empty="initializeDefaultWords"></iron-localstorage>
+    <firebase-document path="/" data="{{fbWords}}"></firebase-document>
   </template>
 
   <script>
@@ -13,19 +11,29 @@
 
       properties: {
         words: {
-          notify: true
+          notify: true,
+          type: Array,
+          observer: '_wordsChanged'
+        },
+
+        fbWords: {
+          type: Array,
+          notify: true,
+          observer: '_fbWordsChanged'
         }
       },
 
-      initializeDefaultWords: function() {
-        this.words = [
-          {
-            word: 'ebl'
-          },
-          {
-            word: 'o'
-          }
-        ]
+      _wordsChanged: function(words) {
+        this.fbWords = words;
+        console.log('_wordsChanged', words);
+      },
+
+      _fbWordsChanged: function(fbWords) {
+        if (fbWords.constructor === Object)
+          this.words = [];
+        else
+          this.words = fbWords;
+        console.log('_fbWordsChanged', fbWords);
       }
     });
   </script>
