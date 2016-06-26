@@ -27,11 +27,7 @@
         if (this.signedIn) {
           this.$.auth.signOut();
         } else {
-          this.$.auth.signInWithPopup().then((function() {
-            this.async((function() {
-              console.log(this.user);
-            }).bind(this));
-          }).bind(this));
+          this.$.auth.signInWithPopup();
         }
       },
 
