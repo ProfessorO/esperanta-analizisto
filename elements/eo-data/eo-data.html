@@ -2,7 +2,7 @@
 
 <dom-module id="eo-data">
   <template>
-    <firebase-document path="/" data="{{fbWords}}"></firebase-document>
+    <firebase-document path="/words" data="{{fbWords}}"></firebase-document>
   </template>
 
   <script>
@@ -12,28 +12,36 @@
       properties: {
         words: {
           notify: true,
-          value: [],
-          observer: '_wordsChanged'
-        },
-
-        fbWords: {
-          type: Array,
-          notify: true,
-          observer: '_fbWordsChanged'
+          value: []
         }
       },
 
-      _wordsChanged: function(words) {
-        this.fbWords = words;
-        console.log('_wordsChanged', words);
+      observers: [
+        '_wordsChanged(words.splices)',
+        '_fbWordsChanged(fbWords.splices)'
+      ],
+
+      _wordsChanged: function(a, b, c) {
+        if (this._ping) {
+          this._ping = false;
+          return;
+        }
+
+        this._ping = true;
+        this.fbWords = [...this.words];
       },
 
-      _fbWordsChanged: function(fbWords) {
-        if (fbWords.constructor === Object)
+      _fbWordsChanged: function() {
+        if (this._ping) {
+          this._ping = false;
+          return;
+        }
+
+        this._ping = true;
+        if (this.fbWords.constructor === Object)
           this.words = [];
         else
-          this.words = fbWords;
-        console.log('_fbWordsChanged', fbWords);
+          this.words = [...this.fbWords];
       }
     });
   </script>
