@@ -29,11 +29,15 @@
       },
 
       go: function() {
-        let text = this.$.source.value;
-        let results = this.$.parser.analyze(text);
+        this.debounce('go', function() {
+          if (this.words.length) {
+            let text = this.$.source.value;
+            let results = this.$.parser.analyze(text);
 
-        console.log(results);
-        this.$.results.innerHTML = JSON.stringify(results, null, 2);
+            console.log(results);
+            this.$.results.innerHTML = JSON.stringify(results, null, 2);
+          }
+        });
       }
     });
   </script>
