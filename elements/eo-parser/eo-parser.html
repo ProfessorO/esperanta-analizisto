@@ -12,7 +12,7 @@
 
         info.wordlist = text.toLowerCase().match(/[abcĉdefgĝhĥijĵklmnoprsŝtuŭvz]+/g);
         info.rootlist = info.wordlist.map(this.splitWord, this);
-        info.mapped = info.wordlist.map(
+        info.zipped = info.wordlist.map(
           (_, index) => [info.wordlist[index], info.rootlist[index]]);
 
         return info;

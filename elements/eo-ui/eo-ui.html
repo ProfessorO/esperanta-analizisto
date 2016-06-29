@@ -35,7 +35,7 @@
             let results = this.$.parser.analyze(text);
 
             console.log(results);
-            this.$.results.innerHTML = JSON.stringify(results, null, 2);
+            this.$.results.innerHTML = JSON.stringify(results.zipped, null, 2);
           }
         });
       }
