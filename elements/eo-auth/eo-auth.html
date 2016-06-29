@@ -1,0 +1,39 @@
+<link rel="import" href="../../bower_components/polymerfire/firebase-auth.html">
+
+<dom-module id="eo-auth">
+  <template>
+    <firebase-auth
+      id="auth"
+      provider="google"
+      signed-in="{{signedIn}}"
+      user="{{user}}"></firebase-auth>
+
+    <button on-tap="authButton">{{_buttonLabel(signedIn)}}</button>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'eo-auth',
+
+      properties: {
+        user: Object,
+
+        signedIn: {
+          value: false
+        }
+      },
+
+      authButton: function() {
+        if (this.signedIn) {
+          this.$.auth.signOut();
+        } else {
+          this.$.auth.signInWithPopup();
+        }
+      },
+
+      _buttonLabel: function(signedIn) {
+        return signedIn ? 'Sign out' : 'Sign in'
+      }
+    });
+  </script>
+</dom-module>
