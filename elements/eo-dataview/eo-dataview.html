@@ -1,3 +1,4 @@
+<link rel="import" href="../expand-button/expand-button.html">
 
 <dom-module id="eo-dataview">
   <template>
@@ -12,7 +13,7 @@
       }
     </style>
 
-    <h2>Data view</h2>
+    <h2><expand-button expanded={{!hidden}}></expand-button>Data view</h2>
     <div hidden$="{{hidden}}">
       <ul>
         <template id="repeater" is="dom-repeat" items="{{words}}" as="word">

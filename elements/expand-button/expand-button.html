@@ -1,0 +1,35 @@
+<dom-module id="expand-button">
+  <template>
+    <style>
+      :host {
+        display: inline-block;
+      }
+
+      img {
+        height: var(--button-height);
+      }
+    </style>
+
+    <span on-tap="tap">
+      <img hidden$="{{expanded}}" src="ic_arrow_drop_down_black_24px.svg">
+      <img hidden$="{{!expanded}}" src="ic_arrow_drop_up_black_24px.svg">
+    </span>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'expand-button',
+
+      properties: {
+        expanded: {
+          value: () => true,
+          notify: true
+        }
+      },
+
+      tap: function() {
+        this.expanded = !this.expanded;
+      }
+    });
+  </script>
+</dom-module>
