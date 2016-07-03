@@ -1,0 +1,26 @@
+<dom-module id="eo-results">
+  <template>
+
+    <h2>Results</h2>
+    <pre id="results"></pre>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'eo-results',
+
+      properties: {
+        results: {
+          observer: '_displayResults'
+        }
+      },
+
+      _displayResults: function() {
+        this.debounce('displayResults', function() {
+          this.$.results.innerHTML = JSON.stringify(this.results.zipped, null, 2);
+        });
+      }
+    });
+  </script>
+</dom-module>

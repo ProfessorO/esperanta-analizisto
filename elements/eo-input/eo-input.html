@@ -1,0 +1,21 @@
+<dom-module id="eo-input">
+  <template>
+
+    <h2>Input</h2>
+    <textarea id="source" cols="80" rows="20" value="{{value::input}}"></textarea>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'eo-input',
+
+      properties: {
+        value: {
+          notify: true,
+          value: () => 'Alicio, jam longan tempon sidinte apud sia fratino sur la deklivo, tre enuiĝis pro senokupo. Unu, du foje ŝi prove rigardis en la libron kiun la fratino legas, sed povis vidi en ĝi nek desegnojn nek konversaciojn, kaj "por kio utilas libro," pensis ŝi, "enhavanta nek desegnojn nek konversaciojn?" Ŝi do ekpripensis—ne tre vigle ĉar la tago estis varma, kaj ŝi sentis sin tre dormema—ĉu la plezuro fari ĉenon el lekantetoj valorus la laboron sin levi kaj kolekti lekantetojn, kiam tutapude preterkuris Blanka kuniklo kun paleruĝaj okuloj.'
+        }
+      }
+    });
+  </script>
+</dom-module>
