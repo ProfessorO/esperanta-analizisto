@@ -2,7 +2,9 @@
   <template>
 
     <h2>Results</h2>
-    <pre id="results"></pre>
+    <template is="dom-repeat" items="{{results.zipped}}">
+      <div>{{item.word}}, {{_stringify(item.roots)}}</div>
+    </template>
 
   </template>
 
@@ -10,16 +12,8 @@
     Polymer({
       is: 'eo-results',
 
-      properties: {
-        results: {
-          observer: '_displayResults'
-        }
-      },
-
-      _displayResults: function() {
-        this.debounce('displayResults', function() {
-          this.$.results.innerHTML = JSON.stringify(this.results.zipped, null, 2);
-        });
+      _stringify: function(arr) {
+        return JSON.stringify(arr, null, 2);
       }
     });
   </script>
