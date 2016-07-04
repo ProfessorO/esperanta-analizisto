@@ -10,6 +10,10 @@
 
         results: {
           notify: true
+        },
+
+        _wordRegex: {
+          value: () => /[ABCĈDEFGĜHĤIJĴKLMNOPRSŜTUŬVZabcĉdefgĝhĥijĵklmnoprsŝtuŭvz]+/g
         }
       },
 
@@ -21,7 +25,7 @@
         if (this.words.length > 0) {
           let info = {};
 
-          info.wordlist = this.input.toLowerCase().match(/[abcĉdefgĝhĥijĵklmnoprsŝtuŭvz]+/g);
+          info.wordlist = this.input.toLowerCase().match(this._wordRegex);
           info.rootlist = info.wordlist.map(this.splitWord, this);
           info.zipped = info.wordlist.map((_, index) => {
             return {word: info.wordlist[index], roots: info.rootlist[index]};
