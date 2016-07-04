@@ -37,7 +37,7 @@
         for (let end = word.length; end > 0; end--) {
           let possibleRoot = word.slice(0, end);
           if (this.words.map(entry => entry.word).includes(possibleRoot)) {
-            return [possibleRoot].concat(this.splitWord(word.slice(end)));
+            return [possibleRoot, ...this.splitWord(word.slice(end))];
           }
         }
         return [word];
