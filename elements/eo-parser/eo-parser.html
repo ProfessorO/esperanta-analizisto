@@ -14,6 +14,10 @@
 
         _wordRegex: {
           value: /[ABCĈDEFGĜHĤIJĴKLMNOPRSŜTUŬVZabcĉdefgĝhĥijĵklmnoprsŝtuŭvz]+/g
+        },
+
+        _bothRegex: {
+          value: /([ABCĈDEFGĜHĤIJĴKLMNOPRSŜTUŬVZabcĉdefgĝhĥijĵklmnoprsŝtuŭvz]+)|([^ABCĈDEFGĜHĤIJĴKLMNOPRSŜTUŬVZabcĉdefgĝhĥijĵklmnoprsŝtuŭvz]+)/g
         }
       },
 
@@ -22,17 +26,18 @@
       ],
 
       analyze: function() {
-        if (this.words.length > 0) {
-          let info = {};
+        this.debounce('analyze', function() {
+          if (this.words.length > 0) {
+            let info = {};
 
-          info.wordlist = this.input.match(this._wordRegex);
-          info.rootlist = info.wordlist.map(this._splitWord, this);
-          info.zipped = info.wordlist.map((_, index) =>
-            ({word: info.wordlist[index], roots: info.rootlist[index]})
-          );
+            // let wordlist = this.input.match(this._wordRegex);
+            let wordlist = this.input.match(this._bothRegex);
+            let rootlist = wordlist.map(this._splitWord, this);
+            info = wordlist.map((_, index) => ({token: wordlist[index], roots: rootlist[index]}));
 
-          this.results = info;
-        }
+            this.results = info;
+          }
+        });
       },
 
       _splitWord: function(word) {
