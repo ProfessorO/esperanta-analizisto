@@ -27,9 +27,9 @@
 
           info.wordlist = this.input.toLowerCase().match(this._wordRegex);
           info.rootlist = info.wordlist.map(this._splitWord, this);
-          info.zipped = info.wordlist.map((_, index) => {
-            return {word: info.wordlist[index], roots: info.rootlist[index]};
-          });
+          info.zipped = info.wordlist.map((_, index) =>
+            ({word: info.wordlist[index], roots: info.rootlist[index]})
+          );
 
           this.results = info;
         }
