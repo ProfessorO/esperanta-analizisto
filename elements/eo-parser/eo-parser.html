@@ -44,10 +44,8 @@
         for (let end = word.length; end > 0; end--) {
           let possibleRoot = word.slice(0, end);
           let wordArray = this.words.map(entry => entry.word);
-          if (wordArray.includes(possibleRoot))
+          if (wordArray.includes(possibleRoot) || wordArray.includes(possibleRoot.toLowerCase()))
             return [possibleRoot, ...this._splitWord(word.slice(end))];
-          else if (wordArray.includes(possibleRoot.toLowerCase()))
-            return [possibleRoot.toLowerCase(), ...this._splitWord(word.slice(end))];
         }
         return [];
       }
