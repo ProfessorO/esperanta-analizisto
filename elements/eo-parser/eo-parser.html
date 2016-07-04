@@ -36,8 +36,6 @@
       },
 
       _splitWord: function(word) {
-        if (word.length == 0)
-          return [];
         for (let end = word.length; end > 0; end--) {
           let possibleRoot = word.slice(0, end);
           let wordArray = this.words.map(entry => entry.word);
@@ -46,7 +44,7 @@
           else if (wordArray.includes(possibleRoot.toLowerCase()))
             return [possibleRoot.toLowerCase(), ...this._splitWord(word.slice(end))];
         }
-        return [word];
+        return [];
       }
     });
   </script>
