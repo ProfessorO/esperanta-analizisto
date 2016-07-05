@@ -1,9 +1,15 @@
 <dom-module id="eo-input">
   <template>
+    <style>
+      textarea {
+        box-sizing: border-box;
+        width: 100%;
+        height: 20em;
+      }
+    </style>
 
     <h2>Input</h2>
-    <textarea id="source" cols="80" rows="20" value="{{value::input}}"></textarea>
-
+    <textarea id="source" value="{{value::input}}"></textarea>
   </template>
 
   <script>
