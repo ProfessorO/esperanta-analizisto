@@ -2,9 +2,7 @@
   <template>
 
     <h2>Results</h2>
-    <template is="dom-repeat" items="{{results.zipped}}">
-      <div>{{item.word}}, {{_stringify(item.roots)}}</div>
-    </template>
+    <div id="show"></div>
 
   </template>
 
@@ -12,8 +10,64 @@
     Polymer({
       is: 'eo-results',
 
-      _stringify: function(arr) {
-        return JSON.stringify(arr, null, 2);
+      properties: {
+        results: {
+          observer: '_show'
+        },
+
+        _colorArray: {
+          value: [
+            'hsl(0, 95%, 75%)',
+            'hsl(280, 95%, 75%)',
+            'hsl(90, 95%, 40%)',
+            'hsl(35, 95%, 75%)',
+            'hsl(205, 95%, 75%)',
+            'hsl(315, 95%, 75%)',
+            'hsl(55, 95%, 40%)'
+          ]
+        },
+
+        _currentColorIndex: {
+          value: -1
+        }
+      },
+
+      _show: function() {
+        let show = this.$.show;
+        while (show.lastChild)
+          show.removeChild(show.lastChild);
+
+        for (let token of this.results) {
+          if (!token.roots.length) {
+            this._newSpan(token.token, false);
+          } else {
+            token.roots.forEach(token => this._newSpan(token, true));
+            if (token.token != token.roots.join('')) {
+              this._newSpan(token.token.substr(token.roots.join('').length), false);
+            }
+          }
+        }
+      },
+
+      _newSpan: function(token, isRoot) {
+        let span = document.createElement('span');
+
+        if (isRoot) {
+          span.classList.add('root');
+          span.style.backgroundColor = this._nextColor();
+        }
+
+        span.textContent = token;
+
+        this.$.show.appendChild(span);
+      },
+
+      _nextColor: function() {
+        if (this._currentColorIndex < this._colorArray.length - 1)
+          this._currentColorIndex++;
+        else
+          this._currentColorIndex = 0;
+        return this._colorArray[this._currentColorIndex];
       }
     });
   </script>

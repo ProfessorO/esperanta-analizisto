@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <title>Esperanto parser</title>
-  <link rel="stylesheet" href="esperanto.css">
 
   <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
   <link rel="import" href="bower_components/polymer/polymer.html">
+
   <link rel="import" href="bower_components/polymerfire/firebase-app.html">
   <link rel="import" href="elements/eo-data/eo-data.html">
   <link rel="import" href="elements/eo-auth/eo-auth.html">
@@ -14,6 +14,35 @@
   <link rel="import" href="elements/eo-input/eo-input.html">
   <link rel="import" href="elements/eo-results/eo-results.html">
   <link rel="import" href="elements/eo-dataview/eo-dataview.html">
+
+  <style>
+    body {
+      margin: 1em;
+    }
+
+    #flex {
+      display: flex;
+      flex-direction: column;
+    }
+
+    @media screen and (min-width: 50em) {
+      #flex {
+        flex-direction: row;
+      }
+
+      #left {
+        order: 1;
+        width: 50vw;
+        margin-right: 1em;
+      }
+
+      #right {
+        order: 2;
+        width: 50vw;
+        margin-left: 1em;
+      }
+    }
+  </style>
 </head>
 <body>
 
@@ -26,15 +55,21 @@
 
     <eo-data words="{{words}}"></eo-data>
 
-    <eo-auth></eo-auth>
-
     <eo-parser words="{{words}}" input="{{input}}" results="{{results}}"></eo-parser>
 
-    <eo-input value="{{input}}"></eo-input>
+    <eo-auth></eo-auth>
 
-    <eo-results results="{{results}}"></eo-results>
+    <div id="flex">
+      <div id="right">
+        <eo-dataview words="{{words}}"></eo-dataview>
+      </div>
 
-    <eo-dataview words="{{words}}"></eo-dataview>
+      <div id="left">
+        <eo-input value="{{input}}"></eo-input>
+
+        <eo-results results="{{results}}"></eo-results>
+      </div>
+    </div>
 
   </template>
 

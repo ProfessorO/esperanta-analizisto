@@ -10,6 +10,14 @@
 
         results: {
           notify: true
+        },
+
+        _wordRegex: {
+          value: /[ABCĈDEFGĜHĤIJĴKLMNOPRSŜTUŬVZabcĉdefgĝhĥijĵklmnoprsŝtuŭvz]+/g
+        },
+
+        _bothRegex: {
+          value: /([ABCĈDEFGĜHĤIJĴKLMNOPRSŜTUŬVZabcĉdefgĝhĥijĵklmnoprsŝtuŭvz]+)|([^ABCĈDEFGĜHĤIJĴKLMNOPRSŜTUŬVZabcĉdefgĝhĥijĵklmnoprsŝtuŭvz]+)/g
         }
       },
 
@@ -18,29 +26,28 @@
       ],
 
       analyze: function() {
-        if (this.words.length > 0) {
-          let info = {};
+        this.debounce('analyze', function() {
+          if (this.words.length > 0) {
+            let info = {};
 
-          info.wordlist = this.input.toLowerCase().match(/[abcĉdefgĝhĥijĵklmnoprsŝtuŭvz]+/g);
-          info.rootlist = info.wordlist.map(this.splitWord, this);
-          info.zipped = info.wordlist.map((_, index) => {
-            return {word: info.wordlist[index], roots: info.rootlist[index]};
-          });
+            // let wordlist = this.input.match(this._wordRegex);
+            let wordlist = this.input.match(this._bothRegex);
+            let rootlist = wordlist.map(this._splitWord, this);
+            info = wordlist.map((_, index) => ({token: wordlist[index], roots: rootlist[index]}));
 
-          this.results = info;
-        }
+            this.results = info;
+          }
+        });
       },
 
-      splitWord: function(word) {
-        if (word.length == 0)
-          return [];
+      _splitWord: function(word) {
         for (let end = word.length; end > 0; end--) {
           let possibleRoot = word.slice(0, end);
-          if (this.words.map(entry => entry.word).includes(possibleRoot)) {
-            return [possibleRoot].concat(this.splitWord(word.slice(end)));
-          }
+          let wordArray = this.words.map(entry => entry.word);
+          if (wordArray.includes(possibleRoot) || wordArray.includes(possibleRoot.toLowerCase()))
+            return [possibleRoot, ...this._splitWord(word.slice(end))];
         }
-        return [word];
+        return [];
       }
     });
   </script>
