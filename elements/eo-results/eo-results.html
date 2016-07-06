@@ -1,0 +1,20 @@
+<dom-module id="eo-results">
+  <template>
+
+    <h2>Results</h2>
+    <template is="dom-repeat" items="{{results.zipped}}">
+      <div>{{item.word}}, {{_stringify(item.roots)}}</div>
+    </template>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'eo-results',
+
+      _stringify: function(arr) {
+        return JSON.stringify(arr, null, 2);
+      }
+    });
+  </script>
+</dom-module>

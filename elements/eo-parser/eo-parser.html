@@ -4,18 +4,31 @@
       is: 'eo-parser',
 
       properties: {
-        words: Array
+        words: Array,
+
+        input: String,
+
+        results: {
+          notify: true
+        }
       },
 
-      analyze: function(text) {
-        let info = {};
+      observers: [
+        'analyze(words, input)'
+      ],
 
-        info.wordlist = text.toLowerCase().match(/[abcĉdefgĝhĥijĵklmnoprsŝtuŭvz]+/g);
-        info.rootlist = info.wordlist.map(this.splitWord, this);
-        info.zipped = info.wordlist.map(
-          (_, index) => [info.wordlist[index], info.rootlist[index]]);
+      analyze: function() {
+        if (this.words.length > 0) {
+          let info = {};
 
-        return info;
+          info.wordlist = this.input.toLowerCase().match(/[abcĉdefgĝhĥijĵklmnoprsŝtuŭvz]+/g);
+          info.rootlist = info.wordlist.map(this.splitWord, this);
+          info.zipped = info.wordlist.map((_, index) => {
+            return {word: info.wordlist[index], roots: info.rootlist[index]};
+          });
+
+          this.results = info;
+        }
       },
 
       splitWord: function(word) {

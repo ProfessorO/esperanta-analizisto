@@ -1,10 +1,27 @@
-<link rel="import" href="../eo-list/eo-list.html">
+<link rel="import" href="../expand-button/expand-button.html">
 
 <dom-module id="eo-dataview">
   <template>
-    <h2>Data view</h2>
-    <eo-list words="{{words}}" on-delete-word="deleteWord"></eo-list>
-    <input id="input" on-keyup="_handleInput">
+    <style>
+      expand-button {
+        --button-height: 1.5em;
+        vertical-align: middle;
+      }
+
+      button {
+        margin-left: 1em;
+      }
+    </style>
+
+    <h2><expand-button expanded={{!hidden}}></expand-button>Data view</h2>
+    <div hidden$="{{hidden}}">
+      <ul>
+        <template id="repeater" is="dom-repeat" items="{{words}}" as="word">
+          <li>{{word.word}}<button on-tap="_deleteWord">delete</button></li>
+        </template>
+      </ul>
+      <input id="input" on-keyup="_handleInput">
+    </div>
   </template>
 
   <script>
@@ -13,7 +30,6 @@
 
       properties: {
         words: {
-          type: Array,
           notify: true
         }
       },
@@ -25,11 +41,15 @@
             word: e.target.value
           });
           e.target.value = null;
+
+          this.async(function() {
+            this.$.input.scrollIntoView(false);
+          });
         }
       },
 
-      deleteWord: function(e) {
-        this.arrayDelete('words', e.detail.word);
+      _deleteWord: function(e) {
+        this.arrayDelete('words', this.$.repeater.itemForElement(e.target));
         this.$.input.focus();
       }
     });
