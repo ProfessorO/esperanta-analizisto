@@ -1,15 +1,21 @@
+<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
+
 <dom-module id="eo-input">
   <template>
     <style>
-      textarea {
+      paper-textarea {
         box-sizing: border-box;
         width: 100%;
-        height: 20em;
       }
     </style>
 
     <h2>Input</h2>
-    <textarea id="source" value="{{value::input}}"></textarea>
+    <paper-textarea
+      value="{{value}}"
+      label="Type Esperanto text here"
+      no-label-float
+      spellcheck="false">
+    </paper-textarea>
   </template>
 
   <script>
