@@ -1,3 +1,6 @@
+<link rel="import" href="../../bower_components/iron-a11y-keys/iron-a11y-keys.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+
 <link rel="import" href="../expand-button/expand-button.html">
 
 <dom-module id="eo-dataview">
@@ -5,7 +8,6 @@
     <style>
       expand-button {
         --button-height: 1.5em;
-        vertical-align: middle;
       }
 
       button {
@@ -19,9 +21,21 @@
       }
     </style>
 
-    <h2><expand-button expanded={{!hidden}}></expand-button>Data view</h2>
+    <h2>
+      Data view
+      <expand-button expanded={{!hidden}}></expand-button>
+    </h2>
     <div hidden$="{{hidden}}">
-      <input id="input" on-keyup="_handleInput">
+      <paper-input
+        id="input"
+        label="Add a root"
+        always-float-label>
+      </paper-input>
+      <iron-a11y-keys
+        target="[[_input]]"
+        keys="enter"
+        on-keys-pressed="_pushWord">
+      </iron-a11y-keys>
       <ul>
         <template id="repeater" is="dom-repeat" items="{{words}}" as="word" sort="_sort">
           <li>{{word.word}}<button on-tap="_deleteWord">delete</button></li>
@@ -40,14 +54,15 @@
         }
       },
 
-      _handleInput: function(e) {
-        if (e.keyCode == 13) {
-          // Enter
-          this.push('words', {
-            word: e.target.value
-          });
-          e.target.value = null;
-        }
+      get _input() {
+        return this.$.input;
+      },
+
+      _pushWord: function(e) {
+        this.push('words', {
+          word: this.$.input.value
+        });
+        this.$.input.value = null;
       },
 
       _deleteWord: function(e) {
