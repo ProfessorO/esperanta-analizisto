@@ -7,6 +7,7 @@
   <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
   <link rel="import" href="bower_components/polymer/polymer.html">
 
+  <link rel="import" href="bower_components/font-roboto/roboto.html">
   <link rel="import" href="bower_components/polymerfire/firebase-app.html">
   <link rel="import" href="elements/eo-data/eo-data.html">
   <link rel="import" href="elements/eo-auth/eo-auth.html">
@@ -18,6 +19,10 @@
   <style>
     body {
       margin: 1em;
+      font-family: 'Roboto';
+      -webkit-font-smoothing: antialiased;
+      color: rgba(0, 0, 0, 0.87);
+      line-height: 1.5;
     }
 
     #flex {
@@ -32,13 +37,13 @@
 
       #left {
         order: 1;
-        width: 50vw;
+        width: 30em;
         margin-right: 1em;
       }
 
       #right {
         order: 2;
-        width: 50vw;
+        flex-grow: 1;
         margin-left: 1em;
       }
     }
