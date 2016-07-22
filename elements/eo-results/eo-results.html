@@ -17,13 +17,11 @@
 
         _colorArray: {
           value: [
-            'hsl(0, 95%, 75%)',
-            'hsl(280, 95%, 75%)',
-            'hsl(90, 95%, 40%)',
-            'hsl(35, 95%, 75%)',
             'hsl(205, 95%, 75%)',
-            'hsl(315, 95%, 75%)',
-            'hsl(55, 95%, 40%)'
+            'hsl(0, 95%, 75%)',
+            'hsl(90, 95%, 40%)',
+            'hsl(280, 95%, 75%)',
+            'hsl(35, 95%, 75%)'
           ]
         },
 
@@ -47,6 +45,8 @@
             }
           }
         }
+
+        this._resetColor();
       },
 
       _newSpan: function(token, isRoot) {
@@ -68,6 +68,10 @@
         else
           this._currentColorIndex = 0;
         return this._colorArray[this._currentColorIndex];
+      },
+
+      _resetColor: function() {
+        this._currentColorIndex = -1;
       }
     });
   </script>
