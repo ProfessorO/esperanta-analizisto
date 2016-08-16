@@ -30,8 +30,7 @@
           if (this.words.length > 0) {
             let info = {};
 
-            // let wordlist = this.input.match(this._wordRegex);
-            let wordlist = this.input.match(this._bothRegex);
+            let wordlist = this.input.match(this._bothRegex) || [];
             let rootlist = wordlist.map(this._splitWord, this);
             info = wordlist.map((_, index) => ({token: wordlist[index], roots: rootlist[index]}));
 

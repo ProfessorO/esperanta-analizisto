@@ -22,6 +22,11 @@
   "dependencies": {
     "polymer": "^1.5.0",
     "iron-localstorage": "^1.0.5",
-    "polymerfire": "^0.9.3"
+    "polymerfire": "^0.9.3",
+    "paper-button": "PolymerElements/paper-button#^1.0.12",
+    "paper-input": "PolymerElements/paper-input#^1.1.15",
+    "iron-icons": "PolymerElements/iron-icons#^1.1.3",
+    "iron-icon": "PolymerElements/iron-icon#^1.0.9",
+    "iron-a11y-keys": "PolymerElements/iron-a11y-keys#^1.0.6"
   }
 }

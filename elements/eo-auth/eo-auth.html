@@ -1,14 +1,24 @@
 <link rel="import" href="../../bower_components/polymerfire/firebase-auth.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
 
 <dom-module id="eo-auth">
   <template>
+
+    <style>
+      paper-button {
+        margin-left: -0.57em;
+        color: #3f51b5;
+      }
+    </style>
+
     <firebase-auth
       id="auth"
       provider="google"
       signed-in="{{signedIn}}"
       user="{{user}}"></firebase-auth>
 
-    <button on-tap="authButton">{{_buttonLabel(signedIn)}}</button>
+    <paper-button on-tap="authButton">{{_buttonLabel(signedIn)}}</paper-button>
+
   </template>
 
   <script>
