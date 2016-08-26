@@ -21,14 +21,17 @@
         '_fbWordsChanged(fbWords.splices)'
       ],
 
-      _wordsChanged: function(a, b, c) {
+      _wordsChanged: function() {
         if (this._ping) {
           this._ping = false;
           return;
         }
 
         this._ping = true;
-        this.fbWords = [...this.words];
+        if ( (new Set(this.words.map(a => a.word))).size < this.words.length )
+          this.words = [...this.fbWords];
+        else
+          this.fbWords = [...this.words];
       },
 
       _fbWordsChanged: function() {
