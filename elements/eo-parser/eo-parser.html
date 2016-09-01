@@ -39,12 +39,36 @@
         });
       },
 
+/*
       _splitWord: function(word) {
         for (let end = word.length; end > 0; end--) {
           let possibleRoot = word.slice(0, end);
-          let wordArray = this.words.map(entry => entry.word);
-          if (wordArray.includes(possibleRoot) || wordArray.includes(possibleRoot.toLowerCase()))
-            return [possibleRoot, ...this._splitWord(word.slice(end))];
+          if (this.words.map(entry => entry.word).includes(possibleRoot)) {
+            return [possibleRoot].concat(this.splitWord(word.slice(end)));
+          }
+        }
+        return [word];
+      }
+*/
+      _splitWord: function(word) {
+        let wordArray = this.words.map(entry => entry.word);
+        for (let rootLen = word.length; rootLen > 0; rootLen--)
+        {
+          for (let startIdx = 0; startIdx + rootLen <= word.length; startIdx++)
+          {
+            let possibleRoot = word.slice(startIdx, startIdx + rootLen);
+            if (wordArray.includes(possibleRoot) ||
+              wordArray.includes(possibleRoot.toLowerCase()))
+            {
+              let rootsBefore = (startIdx > 0) ?
+                    this._splitWord(word.slice(0, startIdx)) : [],
+                  rootsAfter = (startIdx + rootLen <= word.length) ?
+                    this._splitWord(word.slice(startIdx + rootLen)) : [],
+                  allRoots = [...rootsBefore, possibleRoot, ...rootsAfter];
+              if (allRoots.join("").length == word.length)
+                return allRoots;
+            }
+          }
         }
         return [];
       }
