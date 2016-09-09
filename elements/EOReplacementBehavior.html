@@ -1,0 +1,151 @@
+<script>
+
+  window.EOReplacementBehavior = window.EOReplacementBehavior || {
+
+    attached: function() {
+      for (el of Polymer.dom(this.root).querySelectorAll('[eo-replace]')) {
+        this.listen(el, 'input', '_EOInput');
+        this.listen(el, 'blur', '_EOBlur');
+        this.listen(el, 'select', '_EOSelect');
+        this.listen(el, 'focus', '_EOInput');
+      }
+    },
+
+    detached: function() {
+      for (el of Polymer.dom(this.root).querySelectorAll('[eo-replace]')) {
+        this.unlisten(el, 'input', '_EOInput');
+        this.unlisten(el, 'blur', '_EOBlur');
+        this.unlisten(el, 'select', '_EOSelect');
+        this.unlisten(el, 'focus', '_EOInput');
+      }
+    },
+
+    properties: {
+      replacements: {
+        value: () => [
+          { from: 'cx', to: 'ĉ' },
+          { from: 'c^', to: 'ĉ' },
+          { from: 'gx', to: 'ĝ' },
+          { from: 'g^', to: 'ĝ' },
+          { from: 'hx', to: 'ĥ' },
+          { from: 'h^', to: 'ĥ' },
+          { from: 'jx', to: 'ĵ' },
+          { from: 'j^', to: 'ĵ' },
+          { from: 'sx', to: 'ŝ' },
+          { from: 's^', to: 'ŝ' },
+          { from: 'ux', to: 'ŭ' },
+          { from: 'CX', to: 'Ĉ' },
+          { from: 'C^', to: 'Ĉ' },
+          { from: 'GX', to: 'Ĝ' },
+          { from: 'G^', to: 'Ĝ' },
+          { from: 'HX', to: 'Ĥ' },
+          { from: 'H^', to: 'Ĥ' },
+          { from: 'JX', to: 'Ĵ' },
+          { from: 'J^', to: 'Ĵ' },
+          { from: 'SX', to: 'Ŝ' },
+          { from: 'S^', to: 'Ŝ' },
+          { from: 'UX', to: 'Ŭ' },
+          { from: 'CX', to: 'Ĉ' },
+          { from: 'Gx', to: 'Ĝ' },
+          { from: 'Hx', to: 'Ĥ' },
+          { from: 'Jx', to: 'Ĵ' },
+          { from: 'Sx', to: 'Ŝ' },
+          { from: 'Ux', to: 'Ŭ' }
+        ]
+      },
+
+      _lastValue: {
+        value: () => ''
+      },
+
+      _lastCaret: {
+        value: () => 0
+      },
+
+      _lastSelection: {
+        value: () => ({
+          // start: 0,
+          // end: 0,
+          before: '',
+          // selection: '',
+          after: ''
+        })
+      },
+
+      _justTyped: {
+        value: () => ''
+      }
+    },
+
+    _EOInput: function(e) {
+      let currentValue = e.target.value;
+      let caret = e.target.selectionStart;
+
+      if (
+        (this._lastValue.length + 1 == currentValue.length &&
+         this._lastValue.substr(0, caret - 1) == currentValue.substr(0, caret - 1)) ||
+        (this._lastSelection.before + e.target.value.substr(caret - 1, 1) + this._lastSelection.after == currentValue)
+      ) { // if user input exactly one character
+        // if the character was not immediately after the last character, reset _justTyped first
+        if (this._lastCaret + 1 != caret)
+          this._clearTyped();
+        this._typed(currentValue.substr(caret - 1, 1), e.target, caret);
+      } else {
+        this._clearTyped();
+      }
+
+      this._lastValue = e.target.value;
+      this._lastCaret = caret;
+      this._clearSelected();
+    },
+
+    _EOBlur: function(e) {
+      this._clearTyped();
+      this._clearSelected();
+    },
+
+    _EOSelect: function(e) {
+      let t = e.target;
+      // this._lastSelection.start = t.selectionStart;
+      // this._lastSelection.end = t.selectionEnd;
+      this._lastSelection.before = t.value.substring(0, t.selectionStart);
+      // this._lastSelection.selection = t.value.substring(t.selectionStart, t.selectionEnd);
+      this._lastSelection.after = t.value.substring(t.selectionEnd);
+    },
+
+    _typed: function(character, target, caretPosition) {
+      this._justTyped += character;
+      this._checkReplacements(target, caretPosition);
+    },
+
+    _clearTyped: function() {
+      this._justTyped = '';
+    },
+
+    _clearSelected: function() {
+      this._lastSelection.start = 0;
+      this._lastSelection.end = 0;
+      this._lastSelection.before = '';
+      this._lastSelection.selection = '';
+      this._lastSelection.after = '';
+    },
+
+    _checkReplacements: function(target, caretPosition) {
+      let replacement;
+      for (r of this.replacements)
+        if (r.from == this._justTyped.substr(-r.from.length))
+          replacement = r;
+
+      if (replacement !== undefined) {
+        target.value =
+          target.value.substring(0, caretPosition - replacement.from.length) +
+          replacement.to +
+          target.value.substring(caretPosition);
+        target.selectionStart = target.selectionEnd =
+          caretPosition - replacement.from.length + replacement.to.length;
+      }
+    }
+
+  };
+
+</script>

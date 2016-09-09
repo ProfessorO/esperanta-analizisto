@@ -4,6 +4,7 @@
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 
 <link rel="import" href="expand-button.html">
+<link rel="import" href="EOReplacementBehavior.html">
 
 <dom-module id="eo-dataview">
   <template>
@@ -44,6 +45,7 @@
     </h2>
     <div hidden$="{{hidden}}">
       <paper-input
+        eo-replace
         id="input"
         label="Add a root"
         always-float-label>
@@ -67,6 +69,8 @@
   <script>
     Polymer({
       is: 'eo-dataview',
+
+      behaviors: [ EOReplacementBehavior ],
 
       properties: {
         words: {
