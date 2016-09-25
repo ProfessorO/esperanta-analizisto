@@ -1,8 +1,8 @@
-<link rel="import" href="firebase-array-guarantor.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-document.html">
 
 <dom-module id="eo-data">
   <template>
-    <firebase-array-guarantor id="f" path="/words" data="{{words}}"></firebase-array-guarantor>
+    <firebase-document path="/words" data="{{words}}"></firebase-document>
   </template>
 
   <script>
@@ -11,13 +11,8 @@
 
       properties: {
         words: {
-          notify: true,
-          value: []
+          notify: true
         }
-      },
-
-      ready: function() {
-        this.$.f.addIntegrityCheck(data => (new Set(data.map(a => a.word))).size == data.length);
       }
     });
   </script>

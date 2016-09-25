@@ -27,7 +27,7 @@
 
       analyze: function() {
         this.debounce('analyze', function() {
-          if (this.words.length > 0) {
+          if (Object.keys(this.words).length > 0) {
             let info = {};
 
             let wordlist = this.input.match(this._bothRegex) || [];
@@ -43,7 +43,7 @@
       _splitWord: function(word) {
         for (let end = word.length; end > 0; end--) {
           let possibleRoot = word.slice(0, end);
-          if (this.words.map(entry => entry.word).includes(possibleRoot)) {
+          if (Object.keys(this.words).includes(possibleRoot)) {
             return [possibleRoot].concat(this.splitWord(word.slice(end)));
           }
         }
@@ -51,7 +51,7 @@
       }
 */
       _splitWord: function(word) {
-        let wordArray = this.words.map(entry => entry.word);
+        let wordArray = Object.keys(this.words);
         for (let rootLen = word.length; rootLen > 0; rootLen--)
         {
           for (let startIdx = 0; startIdx + rootLen <= word.length; startIdx++)

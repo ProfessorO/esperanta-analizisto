@@ -56,7 +56,7 @@
         on-keys-pressed="_pushWord">
       </iron-a11y-keys>
       <ul>
-        <template id="repeater" is="dom-repeat" items="{{words}}" as="word" sort="_sort">
+        <template id="repeater" is="dom-repeat" items="{{_toArray(words)}}" as="word" sort="_sort">
           <li>
             <iron-icon icon="icons:clear" on-tap="_deleteWord">delete</iron-icon>
             {{word.word}}
@@ -82,15 +82,33 @@
         return this.$.input;
       },
 
+      _toArray: function(obj) {
+        let arr = [];
+        for (key of Object.keys(obj)) {
+          let item = { word: key };
+          if (obj[key].constructor === Object)
+            Object.assign(item, obj[key]);
+          arr.push(item);
+        }
+        return arr;
+      },
+
       _pushWord: function(e) {
-        this.push('words', {
-          word: this.$.input.value.trim()
-        });
+        this.words[this.$.input.value.trim()] = true;
+
+        // force data system to notice that we added a word
+        // https://www.polymer-project.org/1.0/docs/devguide/model-data#override-dirty-check
+        let words = this.words; this.words = {}; this.words = words;
+
         this.$.input.value = '';
       },
 
       _deleteWord: function(e) {
-        this.arrayDelete('words', this.$.repeater.itemForElement(e.target));
+        delete this.words[this.$.repeater.itemForElement(e.target).word];
+
+        // force data system to notice that we deleted a word
+        let words = this.words; this.words = {}; this.words = words;
+
         this.$.input.focus();
       },
 
