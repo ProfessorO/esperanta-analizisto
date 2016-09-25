@@ -9,6 +9,10 @@
         margin-left: -0.57em;
         color: #3f51b5;
       }
+
+      #name {
+        font-weight: bold;
+      }
     </style>
 
     <firebase-auth
@@ -18,6 +22,10 @@
       user="{{user}}"></firebase-auth>
 
     <paper-button on-tap="authButton">{{_buttonLabel(signedIn)}}</paper-button>
+
+    <span hidden$="{{!signedIn}}">
+      <span id="name">{{user.displayName}}</span> ({{user.email}})
+    </span>
 
   </template>
 
