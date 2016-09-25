@@ -6,7 +6,7 @@
 <link rel="import" href="expand-button.html">
 <link rel="import" href="EOReplacementBehavior.html">
 
-<dom-module id="eo-dataview">
+<dom-module id="eo-roots-view">
   <template>
     <style>
       :host {
@@ -40,7 +40,7 @@
     </style>
 
     <h2>
-      Data view
+      Roots
       <expand-button expanded={{!hidden}}></expand-button>
     </h2>
     <div hidden$="{{hidden}}">
@@ -68,7 +68,7 @@
 
   <script>
     Polymer({
-      is: 'eo-dataview',
+      is: 'eo-roots-view',
 
       behaviors: [ EOReplacementBehavior ],
 
