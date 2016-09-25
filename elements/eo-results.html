@@ -75,8 +75,6 @@
           show.removeChild(show.lastChild);
 
         for (let token of this.results) {
-          console.log(token);
-
           if (!token.roots.length)
             this.$.show.appendChild(this._newSpan(token.token));
           else
@@ -153,8 +151,6 @@
             Polymer.dom(this.root).removeChild(this.$$('.popup'));
 
           if (type == 'mouseover') {
-            console.log(type, wordSpan.textContent);
-
             let popup = document.createElement('div');
             popup.onmouseover = popup.onmouseout = this._mouseFunction(wordSpan);
             popup.classList.add('popup');
