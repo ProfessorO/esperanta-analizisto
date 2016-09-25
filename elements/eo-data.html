@@ -1,8 +1,8 @@
-<link rel="import" href="../bower_components/polymerfire/firebase-document.html">
+<link rel="import" href="firebase-array-guarantor.html">
 
 <dom-module id="eo-data">
   <template>
-    <firebase-document path="/words" data="{{fbWords}}"></firebase-document>
+    <firebase-array-guarantor id="f" path="/words" data="{{words}}"></firebase-array-guarantor>
   </template>
 
   <script>
@@ -16,35 +16,8 @@
         }
       },
 
-      observers: [
-        '_wordsChanged(words.splices)',
-        '_fbWordsChanged(fbWords.splices)'
-      ],
-
-      _wordsChanged: function() {
-        if (this._ping) {
-          this._ping = false;
-          return;
-        }
-
-        this._ping = true;
-        if ( (new Set(this.words.map(a => a.word))).size < this.words.length )
-          this.words = [...this.fbWords];
-        else
-          this.fbWords = [...this.words];
-      },
-
-      _fbWordsChanged: function() {
-        if (this._ping) {
-          this._ping = false;
-          return;
-        }
-
-        this._ping = true;
-        if (this.fbWords.constructor === Object)
-          this.words = [];
-        else
-          this.words = [...this.fbWords];
+      ready: function() {
+        this.$.f.addIntegrityCheck(data => (new Set(data.map(a => a.word))).size == data.length);
       }
     });
   </script>
