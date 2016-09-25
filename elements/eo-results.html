@@ -1,3 +1,5 @@
+<link rel="import" href="../bower_components/paper-styles/shadow.html">
+
 <dom-module id="eo-results">
   <template>
 
@@ -12,6 +14,29 @@
 
       #show {
         padding: 8px 0;
+      }
+
+      .popup {
+        @apply(--shadow-elevation-4dp);
+
+        position: absolute;
+        background-color: white;
+        padding: 1em;
+      }
+
+      .popup-label {
+        font-weight: bold;
+      }
+
+      .popup-parsing {
+        font-family: 'Roboto Mono';
+      }
+
+      .popup p:first-child {
+        margin-top: 0;
+      }
+      .popup p:last-child {
+        margin-bottom: 0;
       }
     </style>
 
@@ -50,20 +75,35 @@
           show.removeChild(show.lastChild);
 
         for (let token of this.results) {
-          if (!token.roots.length) {
-            this._newSpan(token.token, false);
-          } else {
-            token.roots.forEach(token => this._newSpan(token, true));
-            if (token.token != token.roots.join('')) {
-              this._newSpan(token.token.substr(token.roots.join('').length), false);
-            }
-          }
+          console.log(token);
+
+          if (!token.roots.length)
+            this.$.show.appendChild(this._newSpan(token.token));
+          else
+            this._showWord(token);
         }
 
         this._resetColor();
       },
 
-      _newSpan: function(token, isRoot) {
+      _showWord: function(word) {
+        let wordSpan = document.createElement('span');
+
+        word.roots.forEach(root => wordSpan.appendChild(this._newSpan(root, true)));
+        if (word.token != word.roots.join('')) {
+          wordSpan.appendChild(
+            this._newSpan(word.token.substr(word.roots.join('').length))
+          );
+        }
+        wordSpan.word = word;
+
+        wordSpan.events = [];
+        wordSpan.onmouseover = wordSpan.onmouseout = this._mouseFunction(wordSpan);
+
+        this.$.show.appendChild(wordSpan);
+      },
+
+      _newSpan: function(token, isRoot = false) {
         let span = document.createElement('span');
 
         if (isRoot) {
@@ -73,7 +113,7 @@
 
         span.textContent = token;
 
-        this.$.show.appendChild(span);
+        return span;
       },
 
       _nextColor: function() {
@@ -86,6 +126,72 @@
 
       _resetColor: function() {
         this._currentColorIndex = -1;
+      },
+
+      _mouseFunction: function(wordSpan) {
+        return event => {
+          wordSpan.events.push(event);
+
+          this.debounce('mouse', () => {
+            let lastEvents = wordSpan.events.slice(-2);
+            let first, second;
+
+            if (lastEvents.length >= 2)
+              [first, second] = [lastEvents[0], lastEvents[1]];
+            else
+              second = lastEvents[0];
+
+            if (!first || first.timeStamp != second.timeStamp)
+              this._popup(event.type, wordSpan);
+          }, 1);
+        };
+      },
+
+      _popup: function(type, wordSpan) {
+        this.debounce('popup', () => {
+          if (this.$$('.popup'))
+            Polymer.dom(this.root).removeChild(this.$$('.popup'));
+
+          if (type == 'mouseover') {
+            console.log(type, wordSpan.textContent);
+
+            let popup = document.createElement('div');
+            popup.onmouseover = popup.onmouseout = this._mouseFunction(wordSpan);
+            popup.classList.add('popup');
+
+            popup.style.visibility = 'hidden';
+            Polymer.dom(this.root).appendChild(popup);
+            this.scopeSubtree(popup, true);
+
+            popup.innerHTML = `
+              <p>
+                <span class="popup-label">Parsing</span>:
+                <span class="popup-parsing">${wordSpan.word.roots.join('-')}</span>
+              </p>
+            `;
+
+            this.async(() => this._positionPopup(popup, wordSpan), 1);
+          }
+        }, 200);
+      },
+
+      _positionPopup: function(popup, wordSpan, secondTime) {
+        let wordRect = wordSpan.getBoundingClientRect();
+
+        popup.style.top = (wordRect.top + document.body.scrollTop - popup.offsetHeight) + 'px';
+
+        popup.style.left = '0';
+        let left = wordRect.left + wordSpan.offsetWidth / 2 - popup.offsetWidth / 2;
+        let docWidth = document.documentElement.clientWidth;
+        left = left + popup.offsetWidth > docWidth - 4 ? docWidth - 4 - popup.offsetWidth : left;
+        popup.style.left = (left < 4 ? 4 : left) + 'px';
+
+        popup.style.visibility = '';
+
+        if (!secondTime) {
+          this.async(() => this._positionPopup(popup, wordSpan, true), 200);
+          this.async(() => this._positionPopup(popup, wordSpan, true), 201);
+        }
       }
     });
   </script>
