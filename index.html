@@ -66,9 +66,9 @@
       auth-domain="esperanta-analizisto.firebaseapp.com"
       database-url="https://esperanta-analizisto.firebaseio.com"></firebase-app>
 
-    <eo-data words="{{words}}"></eo-data>
+    <eo-data roots="{{roots}}"></eo-data>
 
-    <eo-parser words="{{words}}" input="{{input}}" results="{{results}}"></eo-parser>
+    <eo-parser roots="{{roots}}" input="{{input}}" results="{{results}}"></eo-parser>
 
     <eo-auth></eo-auth>
 
@@ -80,7 +80,7 @@
       </div>
 
       <div id="right">
-        <eo-roots-view words="{{words}}"></eo-roots-view>
+        <eo-roots-view roots="{{roots}}"></eo-roots-view>
       </div>
     </div>
 

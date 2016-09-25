@@ -53,13 +53,13 @@
       <iron-a11y-keys
         target="[[_input]]"
         keys="enter"
-        on-keys-pressed="_pushWord">
+        on-keys-pressed="_pushRoot">
       </iron-a11y-keys>
       <ul>
-        <template id="repeater" is="dom-repeat" items="{{_toArray(words)}}" as="word" sort="_sort">
+        <template id="repeater" is="dom-repeat" items="{{_toArray(roots)}}" as="r" sort="_sort">
           <li>
-            <iron-icon icon="icons:clear" on-tap="_deleteWord">delete</iron-icon>
-            {{word.word}}
+            <iron-icon icon="icons:clear" on-tap="_deleteRoot">delete</iron-icon>
+            {{r.eoRoot}}
           </li>
         </template>
       </ul>
@@ -73,7 +73,7 @@
       behaviors: [ EOReplacementBehavior ],
 
       properties: {
-        words: {
+        roots: {
           notify: true
         }
       },
@@ -85,7 +85,7 @@
       _toArray: function(obj) {
         let arr = [];
         for (key of Object.keys(obj)) {
-          let item = { word: key };
+          let item = { eoRoot: key };
           if (obj[key].constructor === Object)
             Object.assign(item, obj[key]);
           arr.push(item);
@@ -93,27 +93,27 @@
         return arr;
       },
 
-      _pushWord: function(e) {
-        this.words[this.$.input.value.trim()] = true;
+      _pushRoot: function(e) {
+        this.roots[this.$.input.value.trim()] = true;
 
-        // force data system to notice that we added a word
+        // force data system to notice that we added a root
         // https://www.polymer-project.org/1.0/docs/devguide/model-data#override-dirty-check
-        let words = this.words; this.words = {}; this.words = words;
+        let roots = this.roots; this.roots = {}; this.roots = roots;
 
         this.$.input.value = '';
       },
 
-      _deleteWord: function(e) {
-        delete this.words[this.$.repeater.itemForElement(e.target).word];
+      _deleteRoot: function(e) {
+        delete this.roots[this.$.repeater.itemForElement(e.target).eoRoot];
 
-        // force data system to notice that we deleted a word
-        let words = this.words; this.words = {}; this.words = words;
+        // force data system to notice that we deleted a root
+        let roots = this.roots; this.roots = {}; this.roots = roots;
 
         this.$.input.focus();
       },
 
       _sort: function(a, b) {
-        return a.word.localeCompare(b.word);
+        return a.eoRoot.localeCompare(b.eoRoot);
       }
     });
   </script>

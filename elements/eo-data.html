@@ -2,7 +2,7 @@
 
 <dom-module id="eo-data">
   <template>
-    <firebase-document path="/words" data="{{words}}"></firebase-document>
+    <firebase-document path="/roots" data="{{roots}}"></firebase-document>
   </template>
 
   <script>
@@ -10,7 +10,7 @@
       is: 'eo-data',
 
       properties: {
-        words: {
+        roots: {
           notify: true
         }
       }
