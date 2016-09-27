@@ -73,13 +73,13 @@
 
     <eo-settings user="{{user}}" settings="{{settings}}"></eo-settings>
 
-    <eo-auth user="{{user}}" settings="{{settings}}"></eo-auth>
+    <eo-auth user="{{user}}" is-admin="{{isAdmin}}" settings="{{settings}}"></eo-auth>
 
     <div id="flex">
       <div id="left">
         <eo-input value="{{input}}" settings="{{settings}}"></eo-input>
 
-        <eo-results results="{{results}}"></eo-results>
+        <eo-results results="{{results}}" is-admin="{{isAdmin}}"></eo-results>
       </div>
 
       <div id="right">

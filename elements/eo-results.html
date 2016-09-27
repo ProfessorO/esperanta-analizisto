@@ -55,6 +55,8 @@
           observer: '_show'
         },
 
+        isAdmin: Boolean,
+
         _colorArray: {
           value: [
             'hsl(205, 95%, 75%)',
@@ -165,6 +167,8 @@
                 <span class="popup-label">Parsing</span>:
                 <span class="popup-parsing">${wordSpan.word.roots.join('-')}</span>
               </p>
+              <p>You ${this.isAdmin ? 'are' : 'are not'} an admin.</p>
+              <!-- This check will be replaced with a button that adds this parsing to the approved list. -->
             `;
 
             this.async(() => this._positionPopup(popup, wordSpan), 1);
