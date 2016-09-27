@@ -24,7 +24,8 @@
     <paper-button on-tap="authButton">{{_buttonLabel(signedIn)}}</paper-button>
 
     <span hidden$="{{!signedIn}}">
-      <span id="name">{{user.displayName}}</span> ({{user.email}})
+      <span id="name">{{user.displayName}}</span>
+      <template is="dom-if" if="{{settings.showEmail}}">({{user.email}})</template>
     </span>
 
   </template>
@@ -34,11 +35,15 @@
       is: 'eo-auth',
 
       properties: {
-        user: Object,
+        user: {
+          notify: true
+        },
 
         signedIn: {
           value: false
-        }
+        },
+
+        settings: Object
       },
 
       authButton: function() {

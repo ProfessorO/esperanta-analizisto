@@ -11,6 +11,7 @@
   <link rel="import" href="bower_components/polymerfire/firebase-app.html">
   <link rel="import" href="elements/eo-data.html">
   <link rel="import" href="elements/eo-auth.html">
+  <link rel="import" href="elements/eo-settings.html">
   <link rel="import" href="elements/eo-parser.html">
   <link rel="import" href="elements/eo-input.html">
   <link rel="import" href="elements/eo-results.html">
@@ -70,17 +71,19 @@
 
     <eo-parser roots="{{roots}}" input="{{input}}" results="{{results}}"></eo-parser>
 
-    <eo-auth></eo-auth>
+    <eo-settings user="{{user}}" settings="{{settings}}"></eo-settings>
+
+    <eo-auth user="{{user}}" settings="{{settings}}"></eo-auth>
 
     <div id="flex">
       <div id="left">
-        <eo-input value="{{input}}"></eo-input>
+        <eo-input value="{{input}}" settings="{{settings}}"></eo-input>
 
         <eo-results results="{{results}}"></eo-results>
       </div>
 
       <div id="right">
-        <eo-roots-view roots="{{roots}}"></eo-roots-view>
+        <eo-roots-view roots="{{roots}}" settings="{{settings}}"></eo-roots-view>
       </div>
     </div>
 
