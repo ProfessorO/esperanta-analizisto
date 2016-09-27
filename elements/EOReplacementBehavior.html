@@ -80,7 +80,7 @@
     },
 
     _EOInput: function(e) {
-      if (! this.settings.doReplacement) return;
+      if (this.settings && !this.settings.doReplacement) return;
 
       let currentValue = e.target.value;
       let caret = e.target.selectionStart;
