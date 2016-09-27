@@ -135,16 +135,23 @@
     },
 
     _checkReplacements: function(target, caretPosition) {
+      let textarea = target;
+      // Find eo-replace element
+      let elem = target;
+      for ( ; elem && elem !== document && elem.nodeType === Node.ELEMENT_NODE; elem = elem.parentNode)
+        if (elem.hasAttribute( 'eo-replace' ))
+          break;
+
       let replacement;
       for (r of this.replacements)
         if (r.from == this._justTyped.substr(-r.from.length))
           replacement = r;
 
       if (replacement !== undefined) {
-        target.value =
-          target.value.substring(0, caretPosition - replacement.from.length) +
+        elem.value =
+          elem.value.substring(0, caretPosition - replacement.from.length) +
           replacement.to +
-          target.value.substring(caretPosition);
+          elem.value.substring(caretPosition);
         target.selectionStart = target.selectionEnd =
           caretPosition - replacement.from.length + replacement.to.length;
       }
