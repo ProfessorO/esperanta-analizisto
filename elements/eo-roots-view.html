@@ -32,6 +32,10 @@
         padding-left: 0;
       }
 
+      li {
+        line-height: 1.8;
+      }
+
       iron-icon {
         width: 1.2em;
         height: 1.2em;
@@ -46,6 +50,7 @@
     </h2>
     <div hidden$="{{hidden}}">
       <paper-input
+        hidden="{{!isAdmin}}"
         eo-replace
         id="input"
         label="Add a root"
@@ -59,7 +64,10 @@
       <ul>
         <template id="repeater" is="dom-repeat" items="{{_toArray(roots)}}" as="r" sort="_sort">
           <li>
-            <iron-icon icon="icons:clear" on-tap="_deleteRoot">delete</iron-icon>
+            <iron-icon
+              hidden="{{!isAdmin}}"
+              icon="icons:clear"
+              on-tap="_deleteRoot">delete</iron-icon>
             {{r.eoRoot}}
           </li>
         </template>
@@ -78,7 +86,9 @@
           notify: true
         },
 
-        settings: Object
+        settings: Object,
+
+        isAdmin: Boolean
       },
 
       get _input() {
