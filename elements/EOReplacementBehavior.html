@@ -139,7 +139,7 @@
       // Find eo-replace element
       let elem = target;
       for ( ; elem && elem !== document && elem.nodeType === Node.ELEMENT_NODE; elem = elem.parentNode)
-        if (elem.hasAttribute( 'eo-replace' ))
+        if (elem.hasAttribute('eo-replace'))
           break;
 
       let replacement;
