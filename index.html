@@ -11,10 +11,11 @@
   <link rel="import" href="bower_components/polymerfire/firebase-app.html">
   <link rel="import" href="elements/eo-data.html">
   <link rel="import" href="elements/eo-auth.html">
+  <link rel="import" href="elements/eo-settings.html">
   <link rel="import" href="elements/eo-parser.html">
   <link rel="import" href="elements/eo-input.html">
   <link rel="import" href="elements/eo-results.html">
-  <link rel="import" href="elements/eo-dataview.html">
+  <link rel="import" href="elements/eo-roots-view.html">
 
   <style is="custom-style">
     body {
@@ -46,13 +47,11 @@
       }
 
       #left {
-        order: 1;
         width: 30em;
         margin-right: 1em;
       }
 
       #right {
-        order: 2;
         flex-grow: 1;
         margin-left: 1em;
       }
@@ -68,21 +67,23 @@
       auth-domain="esperanta-analizisto.firebaseapp.com"
       database-url="https://esperanta-analizisto.firebaseio.com"></firebase-app>
 
-    <eo-data words="{{words}}"></eo-data>
+    <eo-data roots="{{roots}}"></eo-data>
 
-    <eo-parser words="{{words}}" input="{{input}}" results="{{results}}"></eo-parser>
+    <eo-parser roots="{{roots}}" input="{{input}}" results="{{results}}"></eo-parser>
 
-    <eo-auth></eo-auth>
+    <eo-settings user="{{user}}" settings="{{settings}}"></eo-settings>
+
+    <eo-auth user="{{user}}" is-admin="{{isAdmin}}" settings="{{settings}}"></eo-auth>
 
     <div id="flex">
-      <div id="right">
-        <eo-dataview words="{{words}}"></eo-dataview>
+      <div id="left">
+        <eo-input value="{{input}}" settings="{{settings}}"></eo-input>
+
+        <eo-results results="{{results}}" is-admin="{{isAdmin}}"></eo-results>
       </div>
 
-      <div id="left">
-        <eo-input value="{{input}}"></eo-input>
-
-        <eo-results results="{{results}}"></eo-results>
+      <div id="right">
+        <eo-roots-view roots="{{roots}}" is-admin="{{isAdmin}}" settings="{{settings}}"></eo-roots-view>
       </div>
     </div>
 

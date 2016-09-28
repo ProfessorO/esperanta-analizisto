@@ -1,3 +1,4 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 
@@ -9,6 +10,10 @@
         margin-left: -0.57em;
         color: #3f51b5;
       }
+
+      #name {
+        font-weight: bold;
+      }
     </style>
 
     <firebase-auth
@@ -17,7 +22,14 @@
       signed-in="{{signedIn}}"
       user="{{user}}"></firebase-auth>
 
+    <firebase-document path="/admins" data="{{_admins}}"></firebase-document>
+
     <paper-button on-tap="authButton">{{_buttonLabel(signedIn)}}</paper-button>
+
+    <span hidden$="{{!signedIn}}">
+      <span id="name">{{user.displayName}}</span>
+      <template is="dom-if" if="{{settings.showEmail}}">({{user.email}})</template>
+    </span>
 
   </template>
 
@@ -26,11 +38,22 @@
       is: 'eo-auth',
 
       properties: {
-        user: Object,
+        user: {
+          notify: true
+        },
 
         signedIn: {
           value: false
-        }
+        },
+
+        settings: Object,
+
+        isAdmin: {
+          notify: true,
+          computed: '_isAdmin(signedIn, user, _admins)'
+        },
+
+        _admins: Object
       },
 
       authButton: function() {
@@ -41,8 +64,12 @@
         }
       },
 
+      _isAdmin: function(signedIn, user, admins) {
+        return user && user.uid in admins;
+      },
+
       _buttonLabel: function(signedIn) {
-        return signedIn ? 'Sign out' : 'Sign in'
+        return signedIn ? 'Sign out' : 'Sign in';
       }
     });
   </script>

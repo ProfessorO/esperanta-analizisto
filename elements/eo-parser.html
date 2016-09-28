@@ -1,10 +1,12 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
 <dom-module id="eo-parser">
   <script>
     Polymer({
       is: 'eo-parser',
 
       properties: {
-        words: Array,
+        roots: Array,
 
         input: String,
 
@@ -22,12 +24,12 @@
       },
 
       observers: [
-        'analyze(words, input)'
+        'analyze(roots, input)'
       ],
 
       analyze: function() {
         this.debounce('analyze', function() {
-          if (this.words.length > 0) {
+          if (Object.keys(this.roots).length > 0) {
             let info = {};
 
             let wordlist = this.input.match(this._bothRegex) || [];
@@ -43,7 +45,7 @@
       _splitWord: function(word) {
         for (let end = word.length; end > 0; end--) {
           let possibleRoot = word.slice(0, end);
-          if (this.words.map(entry => entry.word).includes(possibleRoot)) {
+          if (Object.keys(this.roots).includes(possibleRoot)) {
             return [possibleRoot].concat(this.splitWord(word.slice(end)));
           }
         }
@@ -51,7 +53,7 @@
       }
 */
       _splitWord: function(word) {
-        let wordArray = this.words.map(entry => entry.word);
+        let wordArray = Object.keys(this.roots);
         for (let rootLen = word.length; rootLen > 0; rootLen--)
         {
           for (let startIdx = 0; startIdx + rootLen <= word.length; startIdx++)

@@ -1,0 +1,122 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-localstorage/iron-localstorage.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/paper-toggle-button/paper-toggle-button.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+
+<dom-module id="eo-settings">
+  <template>
+
+    <style>
+      :host {
+        display: block;
+      }
+
+      paper-icon-button {
+        float: right;
+      }
+
+      paper-toggle-button {
+        display: inline-block;
+        float: right;
+        margin-left: 1em;
+      }
+
+      .subdescription {
+        color: rgba(0, 0, 0, 0.54);
+      }
+    </style>
+
+    <iron-localstorage
+      name="localSettings"
+      value="{{settings}}"
+      on-iron-localstorage-load="applyDefaults"
+      on-iron-localstorage-load-empty="_initializeStorage"
+    ></iron-localstorage>
+
+    <paper-icon-button icon="icons:settings" on-tap="_showDialog"></paper-icon-button>
+
+    <paper-dialog id="d">
+      <h2>Settings</h2>
+      <template id="r" is="dom-repeat" items="{{_settingsData}}">
+        <p>
+          <paper-toggle-button
+            noink
+            checked$="{{_getSetting(item.key)}}"
+            on-change="_changeSetting"
+          ></paper-toggle-button>
+          <span class="description">{{item.description}}</span>
+          <template is="dom-if" if="{{item.subdescription}}">
+            <br><span class="subdescription">{{item.subdescription}}</span>
+          </template>
+        </p>
+      </template>
+      <div class="buttons">
+        <paper-button dialog-confirm>Done</paper-button>
+      </div>
+    </paper-dialog>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'eo-settings',
+
+      properties: {
+        settings: {
+          notify: true,
+          value: () => ({})
+        },
+
+        _settingsData: {
+          value: () => [
+            {
+              key: 'doReplacement',
+              description: 'Automatically replace special characters as you type',
+              subdescription: 'Replace “g^” with “ĝ”, “ux” with “ŭ”, etc.',
+              default: true
+            }, {
+              key: 'showEmail',
+              description: 'Show email address in top-left corner',
+              default: true
+            }
+          ]
+        },
+
+        user: Object
+      },
+
+      applyDefaults: function() {
+        let defaults = {};
+        for (setting of this._settingsData)
+          defaults[setting.key] = setting.default;
+
+        this.settings = Object.assign(defaults, this.settings);
+      },
+
+      _getSetting: function(key) {
+        return this.settings[key]
+      },
+
+      _initializeStorage: function() {
+        this.settings = {};
+
+        this.applyDefaults();
+      },
+
+      _showDialog: function() {
+        this.$.d.open();
+      },
+
+      _changeSetting: function(e) {
+        let settingData = this.$.r.itemForElement(e.target);
+        this.settings[settingData.key] = e.target.checked;
+
+        // force data system to notice that we changed a setting
+        // https://www.polymer-project.org/1.0/docs/devguide/model-data#override-dirty-check
+        let settings = this.settings; this.settings = {}; this.settings = settings;
+      }
+    });
+  </script>
+</dom-module>

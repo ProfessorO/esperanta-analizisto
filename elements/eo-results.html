@@ -1,3 +1,8 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-styles/shadow.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-document.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+
 <dom-module id="eo-results">
   <template>
 
@@ -13,7 +18,37 @@
       #show {
         padding: 8px 0;
       }
+
+      .popup {
+        @apply(--shadow-elevation-4dp);
+
+        position: absolute;
+        background-color: white;
+        padding: 1em;
+        z-index: 99;
+      }
+
+      .popup p:first-child {
+        margin-top: 0;
+      }
+      .popup p:last-child {
+        margin-bottom: 0;
+      }
+
+      .popup-label {
+        font-weight: bold;
+      }
+
+      .popup-parsing {
+        font-family: 'Roboto Mono';
+      }
+
+      .popup-buttons {
+        text-align: center;
+      }
     </style>
+
+    <firebase-document path="/known-good-parsings" data="{{parsings}}"></firebase-document>
 
     <h2>Results</h2>
     <div id="show"></div>
@@ -29,10 +64,15 @@
           observer: '_show'
         },
 
+        parsings: {
+          observer: '_colorKnownWords'
+        },
+
+        isAdmin: Boolean,
+
         _colorArray: {
           value: [
             'hsl(205, 95%, 75%)',
-            'hsl(0, 95%, 75%)',
             'hsl(90, 95%, 40%)',
             'hsl(280, 95%, 75%)',
             'hsl(35, 95%, 75%)'
@@ -40,6 +80,28 @@
         },
 
         _currentColorIndex: {
+          value: -1
+        },
+
+        _knownGoodColorArray: {
+          value: [
+            'rgba(0, 0, 0, 0.3)',
+            'rgba(0, 0, 0, 0.2)'
+          ]
+        },
+
+        _currentKnownGoodColorIndex: {
+          value: -1
+        },
+
+        _knownBadColorArray: {
+          value: [
+            'hsl(0, 95%, 65%)',
+            'hsl(0, 95%, 75%)'
+          ]
+        },
+
+        _currentKnownBadColorIndex: {
           value: -1
         }
       },
@@ -50,20 +112,49 @@
           show.removeChild(show.lastChild);
 
         for (let token of this.results) {
-          if (!token.roots.length) {
-            this._newSpan(token.token, false);
-          } else {
-            token.roots.forEach(token => this._newSpan(token, true));
-            if (token.token != token.roots.join('')) {
-              this._newSpan(token.token.substr(token.roots.join('').length), false);
-            }
-          }
+          if (!token.roots.length)
+            this.$.show.appendChild(this._newSpan(token.token));
+          else
+            this._showWord(token);
         }
 
         this._resetColor();
       },
 
-      _newSpan: function(token, isRoot) {
+      _showWord: function(word) {
+        let wordSpan = document.createElement('span');
+        wordSpan.classList.add('word');
+
+        word.roots.forEach(root => wordSpan.appendChild(this._newSpan(root, true)));
+        if (word.token != word.roots.join('')) {
+          wordSpan.appendChild(
+            this._newSpan(word.token.substr(word.roots.join('').length))
+          );
+        }
+        wordSpan.word = word;
+
+        wordSpan.events = [];
+        wordSpan.onmouseover = wordSpan.onmouseout = event => {
+          wordSpan.events.push(event);
+
+          this.debounce('mouse', () => {
+            let lastEvents = wordSpan.events.slice(-2);
+            let first, second;
+
+            if (lastEvents.length >= 2)
+              [first, second] = [lastEvents[0], lastEvents[1]];
+            else
+              second = lastEvents[0];
+
+            if (!first || first.timeStamp != second.timeStamp)
+              this._popup(event.type, wordSpan);
+          }, 1);
+        };
+
+        this.$.show.appendChild(wordSpan);
+      },
+
+      _newSpan: function(token, isRoot = false) {
         let span = document.createElement('span');
 
         if (isRoot) {
@@ -73,7 +164,7 @@
 
         span.textContent = token;
 
-        this.$.show.appendChild(span);
+        return span;
       },
 
       _nextColor: function() {
@@ -84,8 +175,161 @@
         return this._colorArray[this._currentColorIndex];
       },
 
+      _nextKnownGoodColor: function() {
+        if (this._currentKnownGoodColorIndex < this._knownGoodColorArray.length - 1)
+          this._currentKnownGoodColorIndex++;
+        else
+          this._currentKnownGoodColorIndex = 0;
+        return this._knownGoodColorArray[this._currentKnownGoodColorIndex];
+      },
+
+      _nextKnownBadColor: function() {
+        if (this._currentKnownBadColorIndex < this._knownBadColorArray.length - 1)
+          this._currentKnownBadColorIndex++;
+        else
+          this._currentKnownBadColorIndex = 0;
+        return this._knownBadColorArray[this._currentKnownBadColorIndex];
+      },
+
       _resetColor: function() {
         this._currentColorIndex = -1;
+        this._currentKnownGoodColorIndex = -1;
+        this._currentKnownBadColorIndex = -1;
+      },
+
+      _colorKnownWords: function() {
+        for (wordSpan of Polymer.dom(this.$.show).querySelectorAll('span.word')) {
+          if (this._parsingKnownGood(wordSpan.word)) {
+            for (rootSpan of Polymer.dom(wordSpan).querySelectorAll('span.root')) {
+              if (!rootSpan.previousColor)
+                rootSpan.previousColor = rootSpan.style.backgroundColor;
+              rootSpan.style.backgroundColor = this._nextKnownGoodColor();
+            }
+          } else if (this._parsingKnownBad(wordSpan.word)) {
+            for (rootSpan of Polymer.dom(wordSpan).querySelectorAll('span.root')) {
+              if (!rootSpan.previousColor)
+                rootSpan.previousColor = rootSpan.style.backgroundColor;
+              rootSpan.style.backgroundColor = this._nextKnownBadColor();
+            }
+          } else {
+            for (rootSpan of Polymer.dom(wordSpan).querySelectorAll('span.root')) {
+              rootSpan.style.backgroundColor = rootSpan.previousColor;
+              delete rootSpan.previousColor;
+            }
+          }
+        }
+      },
+
+      _popup: function(type, wordSpan) {
+        this.debounce('popup', () => {
+          let searchPopup = this.$$('.popup');
+          if (searchPopup) {
+            if (searchPopup.wordSpan == wordSpan && type == 'mouseover') return;
+
+            let searchButton = Polymer.dom(searchPopup).querySelector('paper-button');
+            if (searchButton)
+              this.unlisten(searchButton, 'tap', '_addRemoveParsing');
+            Polymer.dom(searchPopup).parentNode.removeChild(searchPopup);
+          }
+
+          if (type == 'mouseover') {
+            let popup = document.createElement('div');
+            popup.classList.add('popup');
+
+            popup.style.visibility = 'hidden';
+            Polymer.dom(wordSpan).appendChild(popup);
+
+            popup.wordSpan = wordSpan;
+
+            this._fillInPopup(popup);
+
+            this.scopeSubtree(popup, true);
+          }
+        }, 200);
+      },
+
+      _positionPopup: function(popup, wordSpan, secondTime) {
+        let wordRect = wordSpan.getBoundingClientRect();
+
+        popup.style.top = (wordRect.top + document.body.scrollTop - popup.offsetHeight) + 'px';
+
+        popup.style.left = '0';
+        let left = wordRect.left + wordSpan.offsetWidth / 2 - popup.offsetWidth / 2;
+        let docWidth = document.documentElement.clientWidth;
+        left = left + popup.offsetWidth > docWidth - 4 ? docWidth - 4 - popup.offsetWidth : left;
+        popup.style.left = (left < 4 ? 4 : left) + 'px';
+
+        popup.style.visibility = '';
+
+        if (!secondTime) {
+          this.async(() => this._positionPopup(popup, wordSpan, true));
+          this.async(() => this._positionPopup(popup, wordSpan, true), 1);
+
+          // wait for first-time loading of special characters
+          // damn you, weird edge cases
+          this.async(() => this._positionPopup(popup, wordSpan, true), 200);
+          this.async(() => this._positionPopup(popup, wordSpan, true), 201);
+        }
+      },
+
+      _dashes: function(arr) {
+        return Array.isArray(arr) ? arr.join('-') : '';
+      },
+
+      _arrayEqual: (a, b) => a && b && a.length == b.length && a.every((val, i) => val == b[i]),
+
+      _parsingKnownBad: function({ token, roots }) {
+        return token in this.parsings && !this._arrayEqual(roots, this.parsings[token]);
+      },
+
+      _parsingKnownGood: function({ token, roots }) {
+        return token in this.parsings && this._arrayEqual(roots, this.parsings[token]);
+      },
+
+      _addRemoveParsing: function(e) {
+        // Find popup element
+        let elem = e.target;
+        for ( ; elem && elem !== document && elem.nodeType === Node.ELEMENT_NODE; elem = elem.parentNode)
+          if (elem.classList.contains('popup'))
+            break;
+
+        let word = elem.wordSpan.word;
+
+        if (word.token in this.parsings)
+          delete this.parsings[word.token];
+        else
+          this.parsings[word.token] = [...word.roots];
+
+        // force data system to notice that we changed a parsing
+        let parsings = this.parsings; this.parsings = {}; this.parsings = parsings;
+
+        this._fillInPopup(elem);
+        this._colorKnownWords();
+      },
+
+      _fillInPopup: function(popup) {
+        let word = popup.wordSpan.word;
+
+        popup.innerHTML = `
+          <p>
+            <span class="popup-label">Parsing</span>:
+            <span class="popup-parsing">${this._dashes(word.roots)}</span>
+          </p>`;
+        if (this._parsingKnownBad(word)) popup.innerHTML += `
+          <p>
+            <span class="popup-label">Correct parsing</span>:
+            <span class="popup-parsing">${this._dashes(this.parsings[word.token])}</span>
+          </p>`;
+        if (this.isAdmin) { popup.innerHTML += `
+          <p class="popup-buttons">
+            <paper-button>
+              ${word.token in this.parsings ? 'Remove from list' : 'Add to list'}
+            </paper-button>
+          </p>`;
+          this.listen(Polymer.dom(popup).querySelector('paper-button'), 'tap', '_addRemoveParsing');
+        }
+
+        this.async(() => this._positionPopup(popup, popup.wordSpan), 1);
       }
     });
   </script>

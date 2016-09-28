@@ -1,3 +1,4 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/iron-a11y-keys/iron-a11y-keys.html">
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../bower_components/iron-icon/iron-icon.html">
@@ -6,7 +7,7 @@
 <link rel="import" href="expand-button.html">
 <link rel="import" href="EOReplacementBehavior.html">
 
-<dom-module id="eo-dataview">
+<dom-module id="eo-roots-view">
   <template>
     <style>
       :host {
@@ -31,6 +32,10 @@
         padding-left: 0;
       }
 
+      li {
+        line-height: 1.8;
+      }
+
       iron-icon {
         width: 1.2em;
         height: 1.2em;
@@ -40,11 +45,12 @@
     </style>
 
     <h2>
-      Data view
+      Roots
       <expand-button expanded={{!hidden}}></expand-button>
     </h2>
     <div hidden$="{{hidden}}">
       <paper-input
+        hidden="{{!isAdmin}}"
         eo-replace
         id="input"
         label="Add a root"
@@ -53,13 +59,16 @@
       <iron-a11y-keys
         target="[[_input]]"
         keys="enter"
-        on-keys-pressed="_pushWord">
+        on-keys-pressed="_pushRoot">
       </iron-a11y-keys>
       <ul>
-        <template id="repeater" is="dom-repeat" items="{{words}}" as="word" sort="_sort">
+        <template id="repeater" is="dom-repeat" items="{{_toArray(roots)}}" as="r" sort="_sort">
           <li>
-            <iron-icon icon="icons:clear" on-tap="_deleteWord">delete</iron-icon>
-            {{word.word}}
+            <iron-icon
+              hidden="{{!isAdmin}}"
+              icon="icons:clear"
+              on-tap="_deleteRoot">delete</iron-icon>
+            {{r.eoRoot}}
           </li>
         </template>
       </ul>
@@ -68,34 +77,56 @@
 
   <script>
     Polymer({
-      is: 'eo-dataview',
+      is: 'eo-roots-view',
 
       behaviors: [ EOReplacementBehavior ],
 
       properties: {
-        words: {
+        roots: {
           notify: true
-        }
+        },
+
+        settings: Object,
+
+        isAdmin: Boolean
       },
 
       get _input() {
         return this.$.input;
       },
 
-      _pushWord: function(e) {
-        this.push('words', {
-          word: this.$.input.value.trim()
-        });
-        this.$.input.value = null;
+      _toArray: function(obj) {
+        let arr = [];
+        for (key of Object.keys(obj)) {
+          let item = { eoRoot: key };
+          if (obj[key].constructor === Object)
+            Object.assign(item, obj[key]);
+          arr.push(item);
+        }
+        return arr;
       },
 
-      _deleteWord: function(e) {
-        this.arrayDelete('words', this.$.repeater.itemForElement(e.target));
+      _pushRoot: function(e) {
+        this.roots[this.$.input.value.trim()] = true;
+
+        // force data system to notice that we added a root
+        // https://www.polymer-project.org/1.0/docs/devguide/model-data#override-dirty-check
+        let roots = this.roots; this.roots = {}; this.roots = roots;
+
+        this.$.input.value = '';
+      },
+
+      _deleteRoot: function(e) {
+        delete this.roots[this.$.repeater.itemForElement(e.target).eoRoot];
+
+        // force data system to notice that we deleted a root
+        let roots = this.roots; this.roots = {}; this.roots = roots;
+
         this.$.input.focus();
       },
 
       _sort: function(a, b) {
-        return a.word.localeCompare(b.word);
+        return a.eoRoot.localeCompare(b.eoRoot);
       }
     });
   </script>

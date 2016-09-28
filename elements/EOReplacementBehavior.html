@@ -1,3 +1,5 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+
 <script>
 
   window.EOReplacementBehavior = window.EOReplacementBehavior || {
@@ -45,7 +47,7 @@
           { from: 'SX', to: 'Ŝ' },
           { from: 'S^', to: 'Ŝ' },
           { from: 'UX', to: 'Ŭ' },
-          { from: 'CX', to: 'Ĉ' },
+          { from: 'Cx', to: 'Ĉ' },
           { from: 'Gx', to: 'Ĝ' },
           { from: 'Hx', to: 'Ĥ' },
           { from: 'Jx', to: 'Ĵ' },
@@ -78,6 +80,8 @@
     },
 
     _EOInput: function(e) {
+      if (this.settings && !this.settings.doReplacement) return;
+
       let currentValue = e.target.value;
       let caret = e.target.selectionStart;
 
@@ -131,16 +135,23 @@
     },
 
     _checkReplacements: function(target, caretPosition) {
+      let textarea = target;
+      // Find eo-replace element
+      let elem = target;
+      for ( ; elem && elem !== document && elem.nodeType === Node.ELEMENT_NODE; elem = elem.parentNode)
+        if (elem.hasAttribute('eo-replace'))
+          break;
+
       let replacement;
       for (r of this.replacements)
         if (r.from == this._justTyped.substr(-r.from.length))
           replacement = r;
 
       if (replacement !== undefined) {
-        target.value =
-          target.value.substring(0, caretPosition - replacement.from.length) +
+        elem.value =
+          elem.value.substring(0, caretPosition - replacement.from.length) +
           replacement.to +
-          target.value.substring(caretPosition);
+          elem.value.substring(caretPosition);
         target.selectionStart = target.selectionEnd =
           caretPosition - replacement.from.length + replacement.to.length;
       }
