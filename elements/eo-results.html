@@ -65,7 +65,7 @@
         },
 
         parsings: {
-          observer: '_colorKnownGoodWords'
+          observer: '_colorKnownWords'
         },
 
         isAdmin: Boolean,
@@ -73,7 +73,6 @@
         _colorArray: {
           value: [
             'hsl(205, 95%, 75%)',
-            'hsl(0, 95%, 75%)',
             'hsl(90, 95%, 40%)',
             'hsl(280, 95%, 75%)',
             'hsl(35, 95%, 75%)'
@@ -92,6 +91,17 @@
         },
 
         _currentKnownGoodColorIndex: {
+          value: -1
+        },
+
+        _knownBadColorArray: {
+          value: [
+            'hsl(0, 95%, 65%)',
+            'hsl(0, 95%, 75%)'
+          ]
+        },
+
+        _currentKnownBadColorIndex: {
           value: -1
         }
       },
@@ -173,19 +183,33 @@
         return this._knownGoodColorArray[this._currentKnownGoodColorIndex];
       },
 
+      _nextKnownBadColor: function() {
+        if (this._currentKnownBadColorIndex < this._knownBadColorArray.length - 1)
+          this._currentKnownBadColorIndex++;
+        else
+          this._currentKnownBadColorIndex = 0;
+        return this._knownBadColorArray[this._currentKnownBadColorIndex];
+      },
+
       _resetColor: function() {
         this._currentColorIndex = -1;
         this._currentKnownGoodColorIndex = -1;
+        this._currentKnownBadColorIndex = -1;
       },
 
-      _colorKnownGoodWords: function() {
+      _colorKnownWords: function() {
         for (wordSpan of Polymer.dom(this.$.show).querySelectorAll('span.word')) {
           if (this._parsingKnownGood(wordSpan.word)) {
             for (rootSpan of Polymer.dom(wordSpan).querySelectorAll('span.root')) {
-              if (!rootSpan.previousColor) {
+              if (!rootSpan.previousColor)
                 rootSpan.previousColor = rootSpan.style.backgroundColor;
-                rootSpan.style.backgroundColor = this._nextKnownGoodColor();
-              }
+              rootSpan.style.backgroundColor = this._nextKnownGoodColor();
+            }
+          } else if (this._parsingKnownBad(wordSpan.word)) {
+            for (rootSpan of Polymer.dom(wordSpan).querySelectorAll('span.root')) {
+              if (!rootSpan.previousColor)
+                rootSpan.previousColor = rootSpan.style.backgroundColor;
+              rootSpan.style.backgroundColor = this._nextKnownBadColor();
             }
           } else {
             for (rootSpan of Polymer.dom(wordSpan).querySelectorAll('span.root')) {
@@ -280,7 +304,7 @@
         let parsings = this.parsings; this.parsings = {}; this.parsings = parsings;
 
         this._fillInPopup(elem);
-        this._colorKnownGoodWords();
+        this._colorKnownWords();
       },
 
       _fillInPopup: function(popup) {
