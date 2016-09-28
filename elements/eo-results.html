@@ -1,5 +1,7 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-styles/shadow.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-document.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
 
 <dom-module id="eo-results">
   <template>
@@ -26,6 +28,13 @@
         z-index: 99;
       }
 
+      .popup p:first-child {
+        margin-top: 0;
+      }
+      .popup p:last-child {
+        margin-bottom: 0;
+      }
+
       .popup-label {
         font-weight: bold;
       }
@@ -34,13 +43,12 @@
         font-family: 'Roboto Mono';
       }
 
-      .popup p:first-child {
-        margin-top: 0;
-      }
-      .popup p:last-child {
-        margin-bottom: 0;
+      .popup-buttons {
+        text-align: center;
       }
     </style>
+
+    <firebase-document path="/known-good-parsings" data="{{parsings}}"></firebase-document>
 
     <h2>Results</h2>
     <div id="show"></div>
@@ -56,6 +64,10 @@
           observer: '_show'
         },
 
+        parsings: {
+          observer: '_colorKnownGoodWords'
+        },
+
         isAdmin: Boolean,
 
         _colorArray: {
@@ -69,6 +81,17 @@
         },
 
         _currentColorIndex: {
+          value: -1
+        },
+
+        _knownGoodColorArray: {
+          value: [
+            'rgba(0, 0, 0, 0.3)',
+            'rgba(0, 0, 0, 0.2)'
+          ]
+        },
+
+        _currentKnownGoodColorIndex: {
           value: -1
         }
       },
@@ -90,6 +113,7 @@
 
       _showWord: function(word) {
         let wordSpan = document.createElement('span');
+        wordSpan.classList.add('word');
 
         word.roots.forEach(root => wordSpan.appendChild(this._newSpan(root, true)));
         if (word.token != word.roots.join('')) {
@@ -100,7 +124,22 @@
         wordSpan.word = word;
 
         wordSpan.events = [];
-        wordSpan.onmouseover = wordSpan.onmouseout = this._mouseFunction(wordSpan);
+        wordSpan.onmouseover = wordSpan.onmouseout = event => {
+          wordSpan.events.push(event);
+
+          this.debounce('mouse', () => {
+            let lastEvents = wordSpan.events.slice(-2);
+            let first, second;
+
+            if (lastEvents.length >= 2)
+              [first, second] = [lastEvents[0], lastEvents[1]];
+            else
+              second = lastEvents[0];
+
+            if (!first || first.timeStamp != second.timeStamp)
+              this._popup(event.type, wordSpan);
+          }, 1);
+        };
 
         this.$.show.appendChild(wordSpan);
       },
@@ -126,53 +165,61 @@
         return this._colorArray[this._currentColorIndex];
       },
 
-      _resetColor: function() {
-        this._currentColorIndex = -1;
+      _nextKnownGoodColor: function() {
+        if (this._currentKnownGoodColorIndex < this._knownGoodColorArray.length - 1)
+          this._currentKnownGoodColorIndex++;
+        else
+          this._currentKnownGoodColorIndex = 0;
+        return this._knownGoodColorArray[this._currentKnownGoodColorIndex];
       },
 
-      _mouseFunction: function(wordSpan) {
-        return event => {
-          wordSpan.events.push(event);
+      _resetColor: function() {
+        this._currentColorIndex = -1;
+        this._currentKnownGoodColorIndex = -1;
+      },
 
-          this.debounce('mouse', () => {
-            let lastEvents = wordSpan.events.slice(-2);
-            let first, second;
-
-            if (lastEvents.length >= 2)
-              [first, second] = [lastEvents[0], lastEvents[1]];
-            else
-              second = lastEvents[0];
-
-            if (!first || first.timeStamp != second.timeStamp)
-              this._popup(event.type, wordSpan);
-          }, 1);
-        };
+      _colorKnownGoodWords: function() {
+        for (wordSpan of Polymer.dom(this.$.show).querySelectorAll('span.word')) {
+          if (this._parsingKnownGood(wordSpan.word)) {
+            for (rootSpan of Polymer.dom(wordSpan).querySelectorAll('span.root')) {
+              if (!rootSpan.previousColor) {
+                rootSpan.previousColor = rootSpan.style.backgroundColor;
+                rootSpan.style.backgroundColor = this._nextKnownGoodColor();
+              }
+            }
+          } else {
+            for (rootSpan of Polymer.dom(wordSpan).querySelectorAll('span.root')) {
+              rootSpan.style.backgroundColor = rootSpan.previousColor;
+              delete rootSpan.previousColor;
+            }
+          }
+        }
       },
 
       _popup: function(type, wordSpan) {
         this.debounce('popup', () => {
-          if (this.$$('.popup'))
-            Polymer.dom(this.root).removeChild(this.$$('.popup'));
+          let searchPopup = this.$$('.popup');
+          if (searchPopup) {
+            if (searchPopup.wordSpan == wordSpan && type == 'mouseover') return;
+
+            let searchButton = Polymer.dom(searchPopup).querySelector('paper-button');
+            if (searchButton)
+              this.unlisten(searchButton, 'tap', '_addRemoveParsing');
+            Polymer.dom(searchPopup).parentNode.removeChild(searchPopup);
+          }
 
           if (type == 'mouseover') {
             let popup = document.createElement('div');
-            popup.onmouseover = popup.onmouseout = this._mouseFunction(wordSpan);
             popup.classList.add('popup');
 
             popup.style.visibility = 'hidden';
-            Polymer.dom(this.root).appendChild(popup);
+            Polymer.dom(wordSpan).appendChild(popup);
+
+            popup.wordSpan = wordSpan;
+
+            this._fillInPopup(popup);
+
             this.scopeSubtree(popup, true);
-
-            popup.innerHTML = `
-              <p>
-                <span class="popup-label">Parsing</span>:
-                <span class="popup-parsing">${wordSpan.word.roots.join('-')}</span>
-              </p>
-              <p>You ${this.isAdmin ? 'are' : 'are not'} an admin.</p>
-              <!-- This check will be replaced with a button that adds this parsing to the approved list. -->
-            `;
-
-            this.async(() => this._positionPopup(popup, wordSpan), 1);
           }
         }, 200);
       },
@@ -191,9 +238,74 @@
         popup.style.visibility = '';
 
         if (!secondTime) {
+          this.async(() => this._positionPopup(popup, wordSpan, true));
+          this.async(() => this._positionPopup(popup, wordSpan, true), 1);
+
+          // wait for first-time loading of special characters
+          // damn you, weird edge cases
           this.async(() => this._positionPopup(popup, wordSpan, true), 200);
           this.async(() => this._positionPopup(popup, wordSpan, true), 201);
         }
+      },
+
+      _dashes: function(arr) {
+        return Array.isArray(arr) ? arr.join('-') : '';
+      },
+
+      _arrayEqual: (a, b) => a && b && a.length == b.length && a.every((val, i) => val == b[i]),
+
+      _parsingKnownBad: function({ token, roots }) {
+        return token in this.parsings && !this._arrayEqual(roots, this.parsings[token]);
+      },
+
+      _parsingKnownGood: function({ token, roots }) {
+        return token in this.parsings && this._arrayEqual(roots, this.parsings[token]);
+      },
+
+      _addRemoveParsing: function(e) {
+        // Find popup element
+        let elem = e.target;
+        for ( ; elem && elem !== document && elem.nodeType === Node.ELEMENT_NODE; elem = elem.parentNode)
+          if (elem.classList.contains('popup'))
+            break;
+
+        let word = elem.wordSpan.word;
+
+        if (word.token in this.parsings)
+          delete this.parsings[word.token];
+        else
+          this.parsings[word.token] = [...word.roots];
+
+        // force data system to notice that we changed a parsing
+        let parsings = this.parsings; this.parsings = {}; this.parsings = parsings;
+
+        this._fillInPopup(elem);
+        this._colorKnownGoodWords();
+      },
+
+      _fillInPopup: function(popup) {
+        let word = popup.wordSpan.word;
+
+        popup.innerHTML = `
+          <p>
+            <span class="popup-label">Parsing</span>:
+            <span class="popup-parsing">${this._dashes(word.roots)}</span>
+          </p>`;
+        if (this._parsingKnownBad(word)) popup.innerHTML += `
+          <p>
+            <span class="popup-label">Correct parsing</span>:
+            <span class="popup-parsing">${this._dashes(this.parsings[word.token])}</span>
+          </p>`;
+        if (this.isAdmin) { popup.innerHTML += `
+          <p class="popup-buttons">
+            <paper-button>
+              ${word.token in this.parsings ? 'Remove from list' : 'Add to list'}
+            </paper-button>
+          </p>`;
+          this.listen(Polymer.dom(popup).querySelector('paper-button'), 'tap', '_addRemoveParsing');
+        }
+
+        this.async(() => this._positionPopup(popup, popup.wordSpan), 1);
       }
     });
   </script>
